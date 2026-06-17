@@ -1,0 +1,15 @@
+[
+  {
+    "Name": "新建配置文件",
+    "Projects": [
+      {
+        "Path": "PlcMonitor.WinForm\\PlcMonitor.WinForm.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "PlcMonitor.Wpf\\PlcMonitor.Wpf.csproj",
+        "Action": "Start"
+      }
+    ]
+  }
+]

@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="PlcMonitor.Core/PlcMonitor.Core.csproj" />
+  <Project Path="PlcMonitor.WinForm/PlcMonitor.WinForm.csproj" />
+  <Project Path="PlcMonitor.Wpf/PlcMonitor.Wpf.csproj" />
+</Solution>
