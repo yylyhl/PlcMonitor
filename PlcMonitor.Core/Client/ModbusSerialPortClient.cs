@@ -44,8 +44,13 @@ namespace PlcMonitor.Core
                 _serialPort.Open();
 
                 var factory = new ModbusFactory();
+                //var sdfsdf = new SerialPort(DeviceInfo.PortName);
                 var serialPort = new SerialPortAdapter(_serialPort);
-                _master = factory.CreateRtuMaster(serialPort);
+                if (DeviceInfo.Protocol == ProtocolType.ASCII)
+                {
+                    _master = factory.CreateAsciiMaster(serialPort);
+                }
+                else { _master = factory.CreateRtuMaster(serialPort); }
                 _master.Transport.Retries = 3;
                 IsConnected = true;
                 OnConnectionStateChanged?.Invoke();

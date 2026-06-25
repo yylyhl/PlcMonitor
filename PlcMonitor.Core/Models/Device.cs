@@ -9,6 +9,7 @@
         public int Port { get; set; }
 
         #region 串口专用
+        public ProtocolType Protocol { get; set; } = ProtocolType.TCP;
         public string PortName { get; set; } = "COM1";  // COM3
         public int BaudRate { get; set; } = 9600;
         public System.IO.Ports.Parity? Parity { get; set; } = System.IO.Ports.Parity.None;

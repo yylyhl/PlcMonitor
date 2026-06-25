@@ -19,4 +19,13 @@
         Float,
         Double
     }
+    public enum ProtocolType
+    {
+        TCP,
+        UDP,
+        RTU,
+        ASCII,
+        RTUoverTCP,
+        RTUoverUDP,
+    }
 }

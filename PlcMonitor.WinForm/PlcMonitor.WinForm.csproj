@@ -6,7 +6,12 @@
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
+    <ApplicationIcon>mtn2m-u3ar0-001.ico</ApplicationIcon>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="mtn2m-u3ar0-001.ico" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\PlcMonitor.Core\PlcMonitor.Core.csproj" />
