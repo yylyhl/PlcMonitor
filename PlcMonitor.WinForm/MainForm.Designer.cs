@@ -30,26 +30,28 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             btnConnectTcp = new Button();
-            btnServerRunTcp = new Button();
-            btnConnectSerialPort = new Button();
-            btnServerRunSerialPort = new Button();
-            statusSlaveTcp = new Label();
+            btnStartSlaveServerTcp = new Button();
+            btnConnectSerial = new Button();
+            btnStartSlaveServerSerial = new Button();
+            statusSlaveServerTcp = new Label();
             statusMasterTcp = new Label();
-            statusSlaveSerialPort = new Label();
-            statusMasterSerialPort = new Label();
-            txtSlaveStationNoTcp = new TextBox();
-            txtSlaveStationNoSerialPort = new TextBox();
-            txtServerSlavePortTcp = new TextBox();
-            btnServerStopTcp = new Button();
+            statusSlaveServerSerial = new Label();
+            statusMasterSerial = new Label();
+            txtConnectTcpStationNo = new TextBox();
+            txtConnectSerialStationNo = new TextBox();
+            txtSlaveServerTcpPort = new TextBox();
+            btnStopSlaveServerTcp = new Button();
             btnDisconnectTcp = new Button();
-            btnServerStopSerialPort = new Button();
-            btnDisconnectSerialPort = new Button();
-            txtServerSlavePortSerialPort = new TextBox();
-            txtServerSlaveStationNoTcp = new TextBox();
-            txtSlaveHostTcp = new TextBox();
-            txtSlavePortNameSerialPort = new TextBox();
-            txtSlavePortTcp = new TextBox();
-            txtServerSlavePortNameStationNoSerialPort = new TextBox();
+            btnStopSlaveServerSerial = new Button();
+            btnDisconnectSerial = new Button();
+            txtSlaveServerSerialPortName = new TextBox();
+            txtSlaveServerTcpStationNo = new TextBox();
+            txtConnectTcpHost = new TextBox();
+            txtConnectSerialPortName = new TextBox();
+            txtConnectTcpPort = new TextBox();
+            txtSlaveServerSerialStationNo = new TextBox();
+            comboBoxSlaveServerSerialMode = new ComboBox();
+            comboBoxConnectSerialMode = new ComboBox();
             SuspendLayout();
             // 
             // btnConnectTcp
@@ -61,104 +63,104 @@
             btnConnectTcp.Text = "连接Slave-Tcp";
             btnConnectTcp.UseVisualStyleBackColor = true;
             // 
-            // btnServerRunTcp
+            // btnStartSlaveServerTcp
             // 
-            btnServerRunTcp.Location = new Point(12, 264);
-            btnServerRunTcp.Name = "btnServerRunTcp";
-            btnServerRunTcp.Size = new Size(161, 35);
-            btnServerRunTcp.TabIndex = 1;
-            btnServerRunTcp.Text = "启动Slave-Tcp";
-            btnServerRunTcp.UseVisualStyleBackColor = true;
+            btnStartSlaveServerTcp.Location = new Point(12, 264);
+            btnStartSlaveServerTcp.Name = "btnStartSlaveServerTcp";
+            btnStartSlaveServerTcp.Size = new Size(161, 35);
+            btnStartSlaveServerTcp.TabIndex = 1;
+            btnStartSlaveServerTcp.Text = "启动Slave-Tcp";
+            btnStartSlaveServerTcp.UseVisualStyleBackColor = true;
             // 
-            // btnConnectSerialPort
+            // btnConnectSerial
             // 
-            btnConnectSerialPort.Location = new Point(12, 111);
-            btnConnectSerialPort.Name = "btnConnectSerialPort";
-            btnConnectSerialPort.Size = new Size(161, 37);
-            btnConnectSerialPort.TabIndex = 0;
-            btnConnectSerialPort.Text = "连接Slave-SerialPort";
-            btnConnectSerialPort.UseVisualStyleBackColor = true;
+            btnConnectSerial.Location = new Point(12, 111);
+            btnConnectSerial.Name = "btnConnectSerial";
+            btnConnectSerial.Size = new Size(161, 37);
+            btnConnectSerial.TabIndex = 0;
+            btnConnectSerial.Text = "连接Slave-SerialPort";
+            btnConnectSerial.UseVisualStyleBackColor = true;
             // 
-            // btnServerRunSerialPort
+            // btnStartSlaveServerSerial
             // 
-            btnServerRunSerialPort.Location = new Point(12, 365);
-            btnServerRunSerialPort.Name = "btnServerRunSerialPort";
-            btnServerRunSerialPort.Size = new Size(161, 35);
-            btnServerRunSerialPort.TabIndex = 1;
-            btnServerRunSerialPort.Text = "启动Slave-SerialPort";
-            btnServerRunSerialPort.UseVisualStyleBackColor = true;
+            btnStartSlaveServerSerial.Location = new Point(12, 365);
+            btnStartSlaveServerSerial.Name = "btnStartSlaveServerSerial";
+            btnStartSlaveServerSerial.Size = new Size(161, 35);
+            btnStartSlaveServerSerial.TabIndex = 1;
+            btnStartSlaveServerSerial.Text = "启动Slave-SerialPort";
+            btnStartSlaveServerSerial.UseVisualStyleBackColor = true;
             // 
-            // statusSlaveTcp
+            // statusSlaveServerTcp
             // 
-            statusSlaveTcp.AutoSize = true;
-            statusSlaveTcp.Location = new Point(186, 314);
-            statusSlaveTcp.Name = "statusSlaveTcp";
-            statusSlaveTcp.Size = new Size(139, 17);
-            statusSlaveTcp.TabIndex = 2;
-            statusSlaveTcp.Text = "status-server-SlaveTcp";
+            statusSlaveServerTcp.AutoSize = true;
+            statusSlaveServerTcp.Location = new Point(186, 314);
+            statusSlaveServerTcp.Name = "statusSlaveServerTcp";
+            statusSlaveServerTcp.Size = new Size(130, 17);
+            statusSlaveServerTcp.TabIndex = 2;
+            statusSlaveServerTcp.Text = "statusSlaveServerTcp";
             // 
             // statusMasterTcp
             // 
             statusMasterTcp.AutoSize = true;
             statusMasterTcp.Location = new Point(186, 62);
             statusMasterTcp.Name = "statusMasterTcp";
-            statusMasterTcp.Size = new Size(159, 17);
+            statusMasterTcp.Size = new Size(104, 17);
             statusMasterTcp.TabIndex = 2;
-            statusMasterTcp.Text = "status-connect-MasterTcp";
+            statusMasterTcp.Text = "statusMasterTcp";
             // 
-            // statusSlaveSerialPort
+            // statusSlaveServerSerial
             // 
-            statusSlaveSerialPort.AutoSize = true;
-            statusSlaveSerialPort.Location = new Point(186, 415);
-            statusSlaveSerialPort.Name = "statusSlaveSerialPort";
-            statusSlaveSerialPort.Size = new Size(174, 17);
-            statusSlaveSerialPort.TabIndex = 2;
-            statusSlaveSerialPort.Text = "status-server-SlaveSerialPort";
+            statusSlaveServerSerial.AutoSize = true;
+            statusSlaveServerSerial.Location = new Point(186, 415);
+            statusSlaveServerSerial.Name = "statusSlaveServerSerial";
+            statusSlaveServerSerial.Size = new Size(141, 17);
+            statusSlaveServerSerial.TabIndex = 2;
+            statusSlaveServerSerial.Text = "statusSlaveServerSerial";
             // 
-            // statusMasterSerialPort
+            // statusMasterSerial
             // 
-            statusMasterSerialPort.AutoSize = true;
-            statusMasterSerialPort.Location = new Point(186, 164);
-            statusMasterSerialPort.Name = "statusMasterSerialPort";
-            statusMasterSerialPort.Size = new Size(194, 17);
-            statusMasterSerialPort.TabIndex = 2;
-            statusMasterSerialPort.Text = "status-connect-MasterSerialPort";
+            statusMasterSerial.AutoSize = true;
+            statusMasterSerial.Location = new Point(186, 164);
+            statusMasterSerial.Name = "statusMasterSerial";
+            statusMasterSerial.Size = new Size(115, 17);
+            statusMasterSerial.TabIndex = 2;
+            statusMasterSerial.Text = "statusMasterSerial";
             // 
-            // txtSlaveStationNoTcp
+            // txtConnectTcpStationNo
             // 
-            txtSlaveStationNoTcp.Location = new Point(186, 18);
-            txtSlaveStationNoTcp.Name = "txtSlaveStationNoTcp";
-            txtSlaveStationNoTcp.PlaceholderText = "station id";
-            txtSlaveStationNoTcp.Size = new Size(29, 23);
-            txtSlaveStationNoTcp.TabIndex = 3;
-            txtSlaveStationNoTcp.Text = "1";
+            txtConnectTcpStationNo.Location = new Point(186, 18);
+            txtConnectTcpStationNo.Name = "txtConnectTcpStationNo";
+            txtConnectTcpStationNo.PlaceholderText = "station id";
+            txtConnectTcpStationNo.Size = new Size(29, 23);
+            txtConnectTcpStationNo.TabIndex = 3;
+            txtConnectTcpStationNo.Text = "1";
             // 
-            // txtSlaveStationNoSerialPort
+            // txtConnectSerialStationNo
             // 
-            txtSlaveStationNoSerialPort.Location = new Point(186, 118);
-            txtSlaveStationNoSerialPort.Name = "txtSlaveStationNoSerialPort";
-            txtSlaveStationNoSerialPort.PlaceholderText = "station id";
-            txtSlaveStationNoSerialPort.Size = new Size(29, 23);
-            txtSlaveStationNoSerialPort.TabIndex = 3;
-            txtSlaveStationNoSerialPort.Text = "2";
+            txtConnectSerialStationNo.Location = new Point(186, 118);
+            txtConnectSerialStationNo.Name = "txtConnectSerialStationNo";
+            txtConnectSerialStationNo.PlaceholderText = "station id";
+            txtConnectSerialStationNo.Size = new Size(29, 23);
+            txtConnectSerialStationNo.TabIndex = 3;
+            txtConnectSerialStationNo.Text = "2";
             // 
-            // txtServerSlavePortTcp
+            // txtSlaveServerTcpPort
             // 
-            txtServerSlavePortTcp.Location = new Point(234, 270);
-            txtServerSlavePortTcp.Name = "txtServerSlavePortTcp";
-            txtServerSlavePortTcp.PlaceholderText = "port";
-            txtServerSlavePortTcp.Size = new Size(57, 23);
-            txtServerSlavePortTcp.TabIndex = 3;
-            txtServerSlavePortTcp.Text = "502";
+            txtSlaveServerTcpPort.Location = new Point(234, 270);
+            txtSlaveServerTcpPort.Name = "txtSlaveServerTcpPort";
+            txtSlaveServerTcpPort.PlaceholderText = "port";
+            txtSlaveServerTcpPort.Size = new Size(57, 23);
+            txtSlaveServerTcpPort.TabIndex = 3;
+            txtSlaveServerTcpPort.Text = "502";
             // 
-            // btnServerStopTcp
+            // btnStopSlaveServerTcp
             // 
-            btnServerStopTcp.Location = new Point(12, 305);
-            btnServerStopTcp.Name = "btnServerStopTcp";
-            btnServerStopTcp.Size = new Size(161, 35);
-            btnServerStopTcp.TabIndex = 1;
-            btnServerStopTcp.Text = "停止Slave-Tcp";
-            btnServerStopTcp.UseVisualStyleBackColor = true;
+            btnStopSlaveServerTcp.Location = new Point(12, 305);
+            btnStopSlaveServerTcp.Name = "btnStopSlaveServerTcp";
+            btnStopSlaveServerTcp.Size = new Size(161, 35);
+            btnStopSlaveServerTcp.TabIndex = 1;
+            btnStopSlaveServerTcp.Text = "停止Slave-Tcp";
+            btnStopSlaveServerTcp.UseVisualStyleBackColor = true;
             // 
             // btnDisconnectTcp
             // 
@@ -169,102 +171,120 @@
             btnDisconnectTcp.Text = "断开Slave-Tcp";
             btnDisconnectTcp.UseVisualStyleBackColor = true;
             // 
-            // btnServerStopSerialPort
+            // btnStopSlaveServerSerial
             // 
-            btnServerStopSerialPort.Location = new Point(12, 406);
-            btnServerStopSerialPort.Name = "btnServerStopSerialPort";
-            btnServerStopSerialPort.Size = new Size(161, 35);
-            btnServerStopSerialPort.TabIndex = 1;
-            btnServerStopSerialPort.Text = "停止Slave-SerialPort";
-            btnServerStopSerialPort.UseVisualStyleBackColor = true;
+            btnStopSlaveServerSerial.Location = new Point(12, 406);
+            btnStopSlaveServerSerial.Name = "btnStopSlaveServerSerial";
+            btnStopSlaveServerSerial.Size = new Size(161, 35);
+            btnStopSlaveServerSerial.TabIndex = 1;
+            btnStopSlaveServerSerial.Text = "停止Slave-SerialPort";
+            btnStopSlaveServerSerial.UseVisualStyleBackColor = true;
             // 
-            // btnDisconnectSerialPort
+            // btnDisconnectSerial
             // 
-            btnDisconnectSerialPort.Location = new Point(12, 154);
-            btnDisconnectSerialPort.Name = "btnDisconnectSerialPort";
-            btnDisconnectSerialPort.Size = new Size(161, 37);
-            btnDisconnectSerialPort.TabIndex = 0;
-            btnDisconnectSerialPort.Text = "断开Slave-SerialPort";
-            btnDisconnectSerialPort.UseVisualStyleBackColor = true;
+            btnDisconnectSerial.Location = new Point(12, 154);
+            btnDisconnectSerial.Name = "btnDisconnectSerial";
+            btnDisconnectSerial.Size = new Size(161, 37);
+            btnDisconnectSerial.TabIndex = 0;
+            btnDisconnectSerial.Text = "断开Slave-SerialPort";
+            btnDisconnectSerial.UseVisualStyleBackColor = true;
             // 
-            // txtServerSlavePortSerialPort
+            // txtSlaveServerSerialPortName
             // 
-            txtServerSlavePortSerialPort.Location = new Point(234, 371);
-            txtServerSlavePortSerialPort.Name = "txtServerSlavePortSerialPort";
-            txtServerSlavePortSerialPort.PlaceholderText = "port";
-            txtServerSlavePortSerialPort.Size = new Size(56, 23);
-            txtServerSlavePortSerialPort.TabIndex = 3;
-            txtServerSlavePortSerialPort.Text = "502";
+            txtSlaveServerSerialPortName.Location = new Point(234, 371);
+            txtSlaveServerSerialPortName.Name = "txtSlaveServerSerialPortName";
+            txtSlaveServerSerialPortName.PlaceholderText = "portName";
+            txtSlaveServerSerialPortName.Size = new Size(56, 23);
+            txtSlaveServerSerialPortName.TabIndex = 3;
+            txtSlaveServerSerialPortName.Text = "COM3";
             // 
-            // txtServerSlaveStationNoTcp
+            // txtSlaveServerTcpStationNo
             // 
-            txtServerSlaveStationNoTcp.Location = new Point(186, 270);
-            txtServerSlaveStationNoTcp.Name = "txtServerSlaveStationNoTcp";
-            txtServerSlaveStationNoTcp.PlaceholderText = "station id";
-            txtServerSlaveStationNoTcp.Size = new Size(29, 23);
-            txtServerSlaveStationNoTcp.TabIndex = 3;
-            txtServerSlaveStationNoTcp.Text = "1";
+            txtSlaveServerTcpStationNo.Location = new Point(186, 270);
+            txtSlaveServerTcpStationNo.Name = "txtSlaveServerTcpStationNo";
+            txtSlaveServerTcpStationNo.PlaceholderText = "station id";
+            txtSlaveServerTcpStationNo.Size = new Size(29, 23);
+            txtSlaveServerTcpStationNo.TabIndex = 3;
+            txtSlaveServerTcpStationNo.Text = "1";
             // 
-            // txtSlaveHostTcp
+            // txtConnectTcpHost
             // 
-            txtSlaveHostTcp.Location = new Point(221, 18);
-            txtSlaveHostTcp.Name = "txtSlaveHostTcp";
-            txtSlaveHostTcp.PlaceholderText = "host";
-            txtSlaveHostTcp.Size = new Size(80, 23);
-            txtSlaveHostTcp.TabIndex = 3;
-            txtSlaveHostTcp.Text = "127.0.0.1";
+            txtConnectTcpHost.Location = new Point(221, 18);
+            txtConnectTcpHost.Name = "txtConnectTcpHost";
+            txtConnectTcpHost.PlaceholderText = "host";
+            txtConnectTcpHost.Size = new Size(80, 23);
+            txtConnectTcpHost.TabIndex = 3;
+            txtConnectTcpHost.Text = "127.0.0.1";
             // 
-            // txtSlavePortNameSerialPort
+            // txtConnectSerialPortName
             // 
-            txtSlavePortNameSerialPort.Location = new Point(234, 118);
-            txtSlavePortNameSerialPort.Name = "txtSlavePortNameSerialPort";
-            txtSlavePortNameSerialPort.PlaceholderText = "portName";
-            txtSlavePortNameSerialPort.Size = new Size(80, 23);
-            txtSlavePortNameSerialPort.TabIndex = 3;
-            txtSlavePortNameSerialPort.Text = "COM4";
+            txtConnectSerialPortName.Location = new Point(234, 118);
+            txtConnectSerialPortName.Name = "txtConnectSerialPortName";
+            txtConnectSerialPortName.PlaceholderText = "portName";
+            txtConnectSerialPortName.Size = new Size(56, 23);
+            txtConnectSerialPortName.TabIndex = 3;
+            txtConnectSerialPortName.Text = "COM4";
             // 
-            // txtSlavePortTcp
+            // txtConnectTcpPort
             // 
-            txtSlavePortTcp.Location = new Point(307, 18);
-            txtSlavePortTcp.Name = "txtSlavePortTcp";
-            txtSlavePortTcp.PlaceholderText = "port";
-            txtSlavePortTcp.Size = new Size(57, 23);
-            txtSlavePortTcp.TabIndex = 3;
-            txtSlavePortTcp.Text = "502";
+            txtConnectTcpPort.Location = new Point(307, 18);
+            txtConnectTcpPort.Name = "txtConnectTcpPort";
+            txtConnectTcpPort.PlaceholderText = "port";
+            txtConnectTcpPort.Size = new Size(57, 23);
+            txtConnectTcpPort.TabIndex = 3;
+            txtConnectTcpPort.Text = "502";
             // 
-            // txtServerSlavePortNameStationNoSerialPort
+            // txtSlaveServerSerialStationNo
             // 
-            txtServerSlavePortNameStationNoSerialPort.Location = new Point(186, 371);
-            txtServerSlavePortNameStationNoSerialPort.Name = "txtServerSlavePortNameStationNoSerialPort";
-            txtServerSlavePortNameStationNoSerialPort.PlaceholderText = "station id";
-            txtServerSlavePortNameStationNoSerialPort.Size = new Size(29, 23);
-            txtServerSlavePortNameStationNoSerialPort.TabIndex = 3;
-            txtServerSlavePortNameStationNoSerialPort.Text = "1";
+            txtSlaveServerSerialStationNo.Location = new Point(186, 371);
+            txtSlaveServerSerialStationNo.Name = "txtSlaveServerSerialStationNo";
+            txtSlaveServerSerialStationNo.PlaceholderText = "station id";
+            txtSlaveServerSerialStationNo.Size = new Size(29, 23);
+            txtSlaveServerSerialStationNo.TabIndex = 3;
+            txtSlaveServerSerialStationNo.Text = "1";
+            // 
+            // comboBoxSlaveServerSerialMode
+            // 
+            comboBoxSlaveServerSerialMode.FormattingEnabled = true;
+            comboBoxSlaveServerSerialMode.Location = new Point(307, 371);
+            comboBoxSlaveServerSerialMode.Name = "comboBoxSlaveServerSerialMode";
+            comboBoxSlaveServerSerialMode.Size = new Size(121, 25);
+            comboBoxSlaveServerSerialMode.TabIndex = 4;
+            // 
+            // comboBoxConnectSerialMode
+            // 
+            comboBoxConnectSerialMode.FormattingEnabled = true;
+            comboBoxConnectSerialMode.Location = new Point(307, 118);
+            comboBoxConnectSerialMode.Name = "comboBoxConnectSerialMode";
+            comboBoxConnectSerialMode.Size = new Size(121, 25);
+            comboBoxConnectSerialMode.TabIndex = 4;
             // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 17F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
-            Controls.Add(txtSlavePortNameSerialPort);
-            Controls.Add(txtSlaveStationNoSerialPort);
-            Controls.Add(txtServerSlavePortSerialPort);
-            Controls.Add(txtSlavePortTcp);
-            Controls.Add(txtServerSlavePortTcp);
-            Controls.Add(txtServerSlavePortNameStationNoSerialPort);
-            Controls.Add(txtServerSlaveStationNoTcp);
-            Controls.Add(txtSlaveHostTcp);
-            Controls.Add(txtSlaveStationNoTcp);
-            Controls.Add(statusMasterSerialPort);
-            Controls.Add(statusSlaveSerialPort);
+            Controls.Add(comboBoxConnectSerialMode);
+            Controls.Add(comboBoxSlaveServerSerialMode);
+            Controls.Add(txtConnectSerialPortName);
+            Controls.Add(txtConnectSerialStationNo);
+            Controls.Add(txtSlaveServerSerialPortName);
+            Controls.Add(txtConnectTcpPort);
+            Controls.Add(txtSlaveServerTcpPort);
+            Controls.Add(txtSlaveServerSerialStationNo);
+            Controls.Add(txtSlaveServerTcpStationNo);
+            Controls.Add(txtConnectTcpHost);
+            Controls.Add(txtConnectTcpStationNo);
+            Controls.Add(statusMasterSerial);
+            Controls.Add(statusSlaveServerSerial);
             Controls.Add(statusMasterTcp);
-            Controls.Add(statusSlaveTcp);
-            Controls.Add(btnServerStopSerialPort);
-            Controls.Add(btnServerRunSerialPort);
-            Controls.Add(btnServerStopTcp);
-            Controls.Add(btnServerRunTcp);
-            Controls.Add(btnDisconnectSerialPort);
-            Controls.Add(btnConnectSerialPort);
+            Controls.Add(statusSlaveServerTcp);
+            Controls.Add(btnStopSlaveServerSerial);
+            Controls.Add(btnStartSlaveServerSerial);
+            Controls.Add(btnStopSlaveServerTcp);
+            Controls.Add(btnStartSlaveServerTcp);
+            Controls.Add(btnDisconnectSerial);
+            Controls.Add(btnConnectSerial);
             Controls.Add(btnDisconnectTcp);
             Controls.Add(btnConnectTcp);
             Icon = (Icon)resources.GetObject("$this.Icon");
@@ -277,25 +297,27 @@
         #endregion
 
         private Button btnConnectTcp;
-        private Button btnServerRunTcp;
-        private Button btnConnectSerialPort;
-        private Button btnServerRunSerialPort;
-        private Label statusSlaveTcp;
+        private Button btnStartSlaveServerTcp;
+        private Button btnConnectSerial;
+        private Button btnStartSlaveServerSerial;
+        private Label statusSlaveServerTcp;
         private Label statusMasterTcp;
-        private Label statusSlaveSerialPort;
-        private Label statusMasterSerialPort;
-        private TextBox txtSlaveStationNoTcp;
-        private TextBox txtSlaveStationNoSerialPort;
-        private TextBox txtServerSlavePortTcp;
-        private Button btnServerStopTcp;
+        private Label statusSlaveServerSerial;
+        private Label statusMasterSerial;
+        private TextBox txtConnectTcpStationNo;
+        private TextBox txtConnectSerialStationNo;
+        private TextBox txtSlaveServerTcpPort;
+        private Button btnStopSlaveServerTcp;
         private Button btnDisconnectTcp;
-        private Button btnServerStopSerialPort;
-        private Button btnDisconnectSerialPort;
-        private TextBox txtServerSlavePortSerialPort;
-        private TextBox txtServerSlaveStationNoTcp;
-        private TextBox txtSlaveHostTcp;
-        private TextBox txtSlavePortNameSerialPort;
-        private TextBox txtSlavePortTcp;
-        private TextBox txtServerSlavePortNameStationNoSerialPort;
+        private Button btnStopSlaveServerSerial;
+        private Button btnDisconnectSerial;
+        private TextBox txtSlaveServerSerialPortName;
+        private TextBox txtSlaveServerTcpStationNo;
+        private TextBox txtConnectTcpHost;
+        private TextBox txtConnectSerialPortName;
+        private TextBox txtConnectTcpPort;
+        private TextBox txtSlaveServerSerialStationNo;
+        private ComboBox comboBoxSlaveServerSerialMode;
+        private ComboBox comboBoxConnectSerialMode;
     }
 }

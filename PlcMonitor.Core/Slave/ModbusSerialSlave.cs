@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using NModbus.Serial;
+using System.IO.Ports;
 using System.Net.Sockets;
 
 namespace PlcMonitor.Core.Slave
@@ -6,11 +7,11 @@ namespace PlcMonitor.Core.Slave
     /// <summary>
     /// Modbus TCP从站服务，支持多从站、读写事件、数据模拟、受控启停
     /// </summary>
-    public class ModbusTcpSlaveServer : IDisposable
+    public class ModbusSerialSlave : IDisposable
     {
-        private readonly int _port;
-        private readonly IPAddress _listenIp;
-        private TcpListener? _tcpListener;
+        public Device? DeviceInfo { get; }
+        private SerialPort? _serialPort;
+
         private NModbus.IModbusSlaveNetwork? _slaveNetwork;
         private CancellationTokenSource? _cts;
         private Task? _listenTask;
@@ -32,12 +33,25 @@ namespace PlcMonitor.Core.Slave
         public event Action<byte, PointOperation, ushort, bool[], ushort>? CoilDiscretesStorageOperationOccurred;//OnCoilsRead
         public event Action<byte, PointOperation, ushort, bool[]>? CoilInputsStorageOperationOccurred;//OnCoilsWritten
         #endregion
-
-        public ModbusTcpSlaveServer(string ip = "127.0.0.1", int port = 502)
+        
+        public ModbusSerialSlave(Device device)
         {
-            _port = port;
-            _listenIp = IPAddress.Parse(ip);
+            DeviceInfo = device;
         }
+        //public ModbusSerialPortSlaveServer(string portName, int baudRate = 9600, int dataBits = 8, Parity parity = Parity.None, StopBits stopBits = StopBits.One, ProtocolType Protocol = ProtocolType.RTU)
+        //{
+        //    DeviceInfo = new Device { Protocol = ProtocolType.RTU };
+        //    _serialPort = new SerialPort
+        //    {
+        //        PortName = portName,
+        //        BaudRate = baudRate,
+        //        Parity = parity,
+        //        DataBits = dataBits,
+        //        StopBits = stopBits,
+        //        ReadTimeout = 3000,
+        //        WriteTimeout = 3000
+        //    };
+        //}
 
         /// <summary>
         /// 添加一个从站
@@ -76,15 +90,27 @@ namespace PlcMonitor.Core.Slave
             try
             {
                 _cts = new CancellationTokenSource();
-                _tcpListener = new TcpListener(_listenIp, _port);
-                _tcpListener.Start();
+                _serialPort ??= new SerialPort
+                {
+                    PortName = DeviceInfo.PortName,
+                    BaudRate = DeviceInfo.BaudRate,
+                    Parity = DeviceInfo.Parity ?? Parity.None,
+                    DataBits = DeviceInfo.DataBits ?? 8,
+                    StopBits = DeviceInfo.StopBits ?? StopBits.One,
+                    ReadTimeout = 3000,
+                    WriteTimeout = 3000
+                };
+                _serialPort.Open();
 
                 // 注册取消回调：停止监听以中断ListenAsync
-                _cts.Token.Register(() => _tcpListener.Stop());
+                _cts.Token.Register(() => _serialPort.Close());
 
                 var factory = new NModbus.ModbusFactory();
-                _slaveNetwork = factory.CreateSlaveNetwork(_tcpListener);
-
+                if (DeviceInfo.SerialMode == SerialMode.ASCII)
+                {
+                    _slaveNetwork = factory.CreateAsciiSlaveNetwork(_serialPort);
+                }
+                else { _slaveNetwork = factory.CreateRtuSlaveNetwork(_serialPort); }
                 // 将所有从站加入网络
                 foreach (var (slaveId, dataStore) in SlaveStores)
                 {
@@ -111,11 +137,11 @@ namespace PlcMonitor.Core.Slave
                         OnLog?.Invoke($"监听异常: {ex.Message}");
                     }
                 }, _cts.Token);
-                OnLog?.Invoke($"Modbus TCP从站服务已启动，监听地址:{_listenIp}:{_port}, 站号[{string.Join(',', SlaveStores.Keys)}]");
+                OnLog?.Invoke($"Modbus SerialRtu从站服务已启动，监听:{_serialPort.PortName}, 站号[{string.Join(',', SlaveStores.Keys)}]");
             }
             catch (SocketException ex)
             {
-                OnLog?.Invoke($"启动失败，端口 {_port} 被占用或无权限: {ex.Message}");
+                OnLog?.Invoke($"启动失败，端口 {DeviceInfo?.PortName} 被占用或无权限: {ex.Message}");
                 throw;
             }
         }
@@ -135,56 +161,15 @@ namespace PlcMonitor.Core.Slave
             finally
             {
                 _slaveNetwork?.Dispose();
-                _tcpListener?.Stop();
+                _serialPort?.Close();
                 _listenTask = null;
                 _slaveNetwork = null;
-                _tcpListener = null;
+                _serialPort = null;
                 _cts?.Dispose();
                 _cts = null;
                 OnLog?.Invoke("从站服务已停止");
             }
         }
-
-        #region 外部数据模拟方法（模拟硬件传感器数值变化）
-        ///// <summary>
-        ///// 设置单个保持寄存器的值
-        ///// </summary>
-        //public void SetHoldingRegister(byte slaveId, ushort address, ushort value)
-        //{
-        //    if (!SlaveStores.TryGetValue(slaveId, out var store))
-        //        throw new ArgumentException($"从站 {slaveId} 不存在");
-        //    store.WriteHoldingRegisters(slaveId, address, [value]);
-        //}
-
-        ///// <summary>
-        ///// 设置保持寄存器的Float值（大端字节序，与主站逻辑完全对应）
-        ///// </summary>
-        //public void SetHoldingRegisterFloat(byte slaveId, ushort address, float value)
-        //{
-        //    if (!SlaveStores.TryGetValue(slaveId, out var store))
-        //        throw new ArgumentException($"从站 {slaveId} 不存在");
-
-        //    // 与主站读取逻辑完全一致：小端转大端
-        //    byte[] bytes = BitConverter.GetBytes(value);
-        //    Array.Reverse(bytes);
-
-        //    ushort[] regs = new ushort[2];
-        //    regs[0] = (ushort)(bytes[0] << 8 | bytes[1]);
-        //    regs[1] = (ushort)(bytes[2] << 8 | bytes[3]);
-
-        //    store.WriteHoldingRegisters(slaveId, address, regs);
-        //}
-
-        ///// <summary>
-        ///// 设置单个线圈状态
-        ///// </summary>
-        //public void SetCoil(byte slaveId, ushort address, bool value)
-        //{
-        //    if (!SlaveStores.TryGetValue(slaveId, out var store))
-        //        throw new ArgumentException($"从站 {slaveId} 不存在");
-        //    store.WriteCoils(slaveId, address, [value]);
-        //}
-        #endregion
 
         #region Dispose模式
         public void Dispose()
@@ -203,7 +188,7 @@ namespace PlcMonitor.Core.Slave
             _disposed = true;
         }
 
-        ~ModbusTcpSlaveServer() => Dispose(false);
+        ~ModbusSerialSlave() => Dispose(false);
         #endregion
     }
 }

@@ -8,7 +8,7 @@ namespace PlcMonitor.Core
     /// Modbus RTU 串口客户端适配器（基于 NModbus 3.x）
     /// 地址格式同 RTU：HR:100 / IR:100 / C:0 / DI:0
     /// </summary>
-    public class ModbusSerialPortClient : ICommunicationClient
+    public class ModbusSerialClient : ICommunicationClient
     {
         private SerialPort _serialPort;
         private IModbusSerialMaster? _master;
@@ -21,7 +21,7 @@ namespace PlcMonitor.Core
 
         public Device DeviceInfo { get; }
 
-        public ModbusSerialPortClient(Device device)
+        public ModbusSerialClient(Device device)
         {
             DeviceInfo = device;
         }
@@ -46,7 +46,7 @@ namespace PlcMonitor.Core
                 var factory = new ModbusFactory();
                 //var sdfsdf = new SerialPort(DeviceInfo.PortName);
                 var serialPort = new SerialPortAdapter(_serialPort);
-                if (DeviceInfo.Protocol == ProtocolType.ASCII)
+                if (DeviceInfo.SerialMode == SerialMode.ASCII)
                 {
                     _master = factory.CreateAsciiMaster(serialPort);
                 }

@@ -10,7 +10,7 @@
             return device.DeviceType switch
             {
                 DeviceType.ModbusTcp => new ModbusTcpClient(device),
-                DeviceType.ModbusSerialPort => new ModbusSerialPortClient(device),
+                DeviceType.ModbusSerialPort => new ModbusSerialClient(device),
                 DeviceType.SiemensS7 => new S7Client(device),
                 DeviceType.OpcUa => new OpcUaClient(device),
                 _ => throw new NotSupportedException($"不支持的设备类型：{device.DeviceType}")

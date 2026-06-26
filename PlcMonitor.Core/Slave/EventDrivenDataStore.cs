@@ -111,28 +111,28 @@ namespace PlcMonitor.Core
             _inputRegisters = new SparsePointSource<ushort>();
         }
         /// <summary>
-        /// 离散输入事件
+        /// 线圈事件 读写 Discretes Output
         /// </summary>
         public SparsePointSource<bool> CoilDiscretes
         {
             get { return _coilDiscretes; }
         }
         /// <summary>
-        /// 线圈事件
+        /// 离散输入事件 只读 Discrete Inputs
         /// </summary>
         public SparsePointSource<bool> CoilInputs
         {
             get { return _coilInputs; }
         }
         /// <summary>
-        /// 保持寄存器事件
+        /// 保持寄存器事件 读写
         /// </summary>
         public SparsePointSource<ushort> HoldingRegisters
         {
             get { return _holdingRegisters; }
         }
         /// <summary>
-        /// 输入寄存器事件
+        /// 输入寄存器事件 只读
         /// </summary>
         public SparsePointSource<ushort> InputRegisters
         {

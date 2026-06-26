@@ -19,7 +19,7 @@
         Float,
         Double
     }
-    public enum ProtocolType
+    public enum ModbusMode
     {
         TCP,
         UDP,
@@ -27,5 +27,10 @@
         ASCII,
         RTUoverTCP,
         RTUoverUDP,
+    }
+    public enum SerialMode
+    {
+        RTU,
+        ASCII,
     }
 }
