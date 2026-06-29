@@ -1,6 +1,7 @@
 ﻿using NModbus;
 using NModbus.Serial;
 using System.IO.Ports;
+using System.Net;
 
 namespace PlcMonitor.Core
 {
@@ -44,8 +45,7 @@ namespace PlcMonitor.Core
                 _serialPort.Open();
 
                 var factory = new ModbusFactory();
-                //var sdfsdf = new SerialPort(DeviceInfo.PortName);
-                var serialPort = new SerialPortAdapter(_serialPort);
+                var serialPort = new SerialPortAdapter(_serialPort);//serialPort = new SerialPort(DeviceInfo.PortName);
                 if (DeviceInfo.SerialMode == SerialMode.ASCII)
                 {
                     _master = factory.CreateAsciiMaster(serialPort);
@@ -54,13 +54,14 @@ namespace PlcMonitor.Core
                 _master.Transport.Retries = 3;
                 IsConnected = true;
                 OnConnectionStateChanged?.Invoke();
-
+                //var modbusData = await ReadAsync("HR4", DataPointType.Float);
+                //if (!modbusData.Success) throw new Exception("连接失败。。。");
                 return CommunicationResult<bool>.Ok(true);
             }
             catch (Exception ex)
             {
-                OnError?.Invoke(DeviceInfo.Name, $"连接失败: {ex.Message}");
-                return CommunicationResult<bool>.Fail($"连接失败：{ex.Message}");
+                OnError?.Invoke(DeviceInfo.Name, $"err: {ex.Message}");
+                return CommunicationResult<bool>.Fail($"err：{ex.Message}");
             }
         }
 

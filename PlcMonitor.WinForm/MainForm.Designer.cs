@@ -52,6 +52,7 @@
             txtSlaveServerSerialStationNo = new TextBox();
             comboBoxSlaveServerSerialMode = new ComboBox();
             comboBoxConnectSerialMode = new ComboBox();
+            textBox1 = new TextBox();
             SuspendLayout();
             // 
             // btnConnectTcp
@@ -87,7 +88,7 @@
             btnStartSlaveServerSerial.Name = "btnStartSlaveServerSerial";
             btnStartSlaveServerSerial.Size = new Size(161, 35);
             btnStartSlaveServerSerial.TabIndex = 1;
-            btnStartSlaveServerSerial.Text = "启动Slave-SerialPort";
+            btnStartSlaveServerSerial.Text = "启动Slave-Serial";
             btnStartSlaveServerSerial.UseVisualStyleBackColor = true;
             // 
             // statusSlaveServerTcp
@@ -177,7 +178,7 @@
             btnStopSlaveServerSerial.Name = "btnStopSlaveServerSerial";
             btnStopSlaveServerSerial.Size = new Size(161, 35);
             btnStopSlaveServerSerial.TabIndex = 1;
-            btnStopSlaveServerSerial.Text = "停止Slave-SerialPort";
+            btnStopSlaveServerSerial.Text = "停止Slave-Serial";
             btnStopSlaveServerSerial.UseVisualStyleBackColor = true;
             // 
             // btnDisconnectSerial
@@ -250,6 +251,7 @@
             comboBoxSlaveServerSerialMode.Name = "comboBoxSlaveServerSerialMode";
             comboBoxSlaveServerSerialMode.Size = new Size(121, 25);
             comboBoxSlaveServerSerialMode.TabIndex = 4;
+            comboBoxSlaveServerSerialMode.Text = "RTU";
             // 
             // comboBoxConnectSerialMode
             // 
@@ -258,12 +260,23 @@
             comboBoxConnectSerialMode.Name = "comboBoxConnectSerialMode";
             comboBoxConnectSerialMode.Size = new Size(121, 25);
             comboBoxConnectSerialMode.TabIndex = 4;
+            comboBoxConnectSerialMode.Text = "RTU";
+            // 
+            // textBox1
+            // 
+            textBox1.Location = new Point(463, 12);
+            textBox1.Multiline = true;
+            textBox1.Name = "textBox1";
+            textBox1.ScrollBars = ScrollBars.Both;
+            textBox1.Size = new Size(325, 429);
+            textBox1.TabIndex = 5;
             // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 17F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
+            Controls.Add(textBox1);
             Controls.Add(comboBoxConnectSerialMode);
             Controls.Add(comboBoxSlaveServerSerialMode);
             Controls.Add(txtConnectSerialPortName);
@@ -319,5 +332,6 @@
         private TextBox txtSlaveServerSerialStationNo;
         private ComboBox comboBoxSlaveServerSerialMode;
         private ComboBox comboBoxConnectSerialMode;
+        private TextBox textBox1;
     }
 }

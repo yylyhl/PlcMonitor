@@ -41,6 +41,10 @@ namespace PlcMonitor.WinForm
             btnDisconnectTcp.Click += btnDisconnectTcp_Click;
             Controls.Add(btnDisconnectTcp);
         }
+        private void statusSlaveServerTcpTxt(string message)
+        {
+            statusSlaveServerTcp.Text = $"[statusSlaveServerTcp]---{message}"; ;
+        }
         ICommunicationClient _modbusTcpClient;
         private async void btnDisconnectTcp_Click(object sender, EventArgs e)
         {
@@ -68,7 +72,7 @@ namespace PlcMonitor.WinForm
             var ress = await _modbusTcpClient.ConnectAsync();
             if (!ress.Success)
             {
-                statusMasterTcp.Text = $"状态：连接失败[{ress.ErrorMessage}]";
+                statusMasterTcp.Text = $"状态：[{ress.ErrorMessage}]";
                 btnConnectTcp.Enabled = true;
                 txtConnectTcpStationNo.Enabled = true;
                 txtConnectTcpHost.Enabled = true;
@@ -142,7 +146,7 @@ namespace PlcMonitor.WinForm
             var ress = await _modbusSerialPortClient.ConnectAsync();
             if (!ress.Success)
             {
-                statusMasterSerial.Text = $"状态：连接失败[{ress.ErrorMessage}]";
+                statusMasterSerial.Text = $"状态：[{ress.ErrorMessage}]";
                 btnConnectSerial.Enabled = true;
                 txtConnectSerialStationNo.Enabled = true;
                 txtConnectSerialPortName.Enabled = true;

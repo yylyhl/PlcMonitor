@@ -1,0 +1,76 @@
+{
+  "Serilog": {
+    "MinimumLevel": {
+      "Default": "Information",
+      "Override": {
+        "Microsoft": "Warning",
+        "System": "Warning"
+      }
+    },
+    "WriteTo": [
+      {
+        "Name": "Console",
+        "Args": {
+          "outputTemplate": "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{Level}] {Message}{NewLine}{Properties}{NewLine}{Exception}",
+          "restrictedToMinimumLevel": "Information"
+        }
+      },
+      {
+        "Name": "Debug",
+        "Args": {
+          "outputTemplate": "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{Level}] {Message}{NewLine}{Properties}{NewLine}{Exception}"
+        }
+      },
+      {
+        "Name": "File",
+        "Args": {
+          "path": "logs\\error-.txt",
+          "outputTemplate": "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{Level:u3}] {Message:lj}{NewLine}{Properties}{NewLine}{Exception}",
+          "restrictedToMinimumLevel": "Error",
+          "buffered": true,
+          "flushToDiskInterval": "00:00:01",
+          "encoding": "utf-8",
+          "rollingInterval": "Day",
+          "fileSizeLimitBytes": 10485760,
+          "retainedFileCountLimit": 30,
+          "rollOnFileSizeLimit": true
+        }
+      },
+      {
+        "Name": "File",
+        "Args": {
+          "path": "logs\\warn-.txt",
+          "outputTemplate": "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{Level:u3}] {Message:lj}{NewLine}{Properties}{NewLine}{Exception}",
+          "restrictedToMinimumLevel": "Warn",
+          "buffered": true,
+          "flushToDiskInterval": "00:00:01",
+          "encoding": "utf-8",
+          "rollingInterval": "Day",
+          "fileSizeLimitBytes": 10485760,
+          "retainedFileCountLimit": 30,
+          "rollOnFileSizeLimit": true
+        }
+      },
+      {
+        "Name": "File",
+        "Args": {
+          "path": "logs\\log-.txt",
+          "outputTemplate": "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{Level:u3}] {Message:lj}{NewLine}{Properties}{NewLine}{Exception}",
+          "restrictedToMinimumLevel": "Information",
+          "buffered": true,
+          "flushToDiskInterval": "00:00:01",
+          "encoding": "utf-8",
+          "rollingInterval": "Day",
+          "fileSizeLimitBytes": 10485760,
+          "retainedFileCountLimit": 30,
+          "rollOnFileSizeLimit": true
+        }
+      }
+    ],
+    "Enrich": [
+      "FromLogContext",
+      "WithMachineName",
+      "WithThreadId"
+    ]
+  }
+}

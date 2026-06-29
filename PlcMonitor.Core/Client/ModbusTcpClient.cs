@@ -40,8 +40,8 @@ namespace PlcMonitor.Core
             }
             catch (Exception ex)
             {
-                OnError?.Invoke(DeviceInfo.Name, $"连接失败: {ex.Message}");
-                return CommunicationResult<bool>.Fail($"连接失败：{ex.Message}");
+                OnError?.Invoke(DeviceInfo.Name, $"err: {ex.Message}");
+                return CommunicationResult<bool>.Fail($"err：{ex.Message}");
             }
         }
 
