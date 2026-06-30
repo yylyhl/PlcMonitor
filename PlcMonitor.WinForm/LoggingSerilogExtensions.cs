@@ -10,15 +10,15 @@ namespace PlcMonitor.WinForm
         /// <summary>
         /// 初始化Serilog全局实例，并注入到DI
         /// </summary>
-        public static ILoggingBuilder AddScadaSerilog(this ILoggingBuilder builder, IConfiguration configuration)
+        public static ILoggingBuilder AddMonitorSerilog(this ILoggingBuilder builder, IConfiguration configuration)
         {
+            //Serilog.Debugging.SelfLog.Enable(msg => System.IO.File.AppendAllText("logs/serilog-selflog.txt", msg + Environment.NewLine));
             // 全局Serilog配置，集中管理，业务层无感知
-            var serilogSection = configuration.GetSection("Serilog");
-            if (serilogSection.Exists())
+            if (configuration.GetSection("Serilog").Exists())
             {
                 Log.Logger = new LoggerConfiguration()
                     .Enrich.FromLogContext()
-                    .ReadFrom.Configuration(serilogSection)
+                    .ReadFrom.Configuration(configuration)
                     .CreateLogger();
             }
             else
@@ -48,7 +48,7 @@ namespace PlcMonitor.WinForm
                     retainedFileCountLimit: 31,
                     restrictedToMinimumLevel: LogEventLevel.Error,
                     buffered: true,
-                    flushToDiskInterval: TimeSpan.FromSeconds(1),
+                    flushToDiskInterval: TimeSpan.FromSeconds(2),
                     encoding: new System.Text.UTF8Encoding(encoderShouldEmitUTF8Identifier: true),
                     outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{Level:u3}] Thread:{ThreadId} {SourceContext}: {Message}{NewLine}{Properties}{NewLine}{Exception}"
                 ).WriteTo.Logger(lc => lc.Filter.ByIncludingOnly(e => e.Level == LogEventLevel.Warning).WriteTo.File(
@@ -60,7 +60,7 @@ namespace PlcMonitor.WinForm
                     retainedFileCountLimit: 31,
                     restrictedToMinimumLevel: LogEventLevel.Warning,
                     buffered: true,
-                    flushToDiskInterval: TimeSpan.FromSeconds(1),
+                    flushToDiskInterval: TimeSpan.FromSeconds(2),
                     encoding: new System.Text.UTF8Encoding(encoderShouldEmitUTF8Identifier: true),
                     outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{Level:u3}] Thread:{ThreadId} {SourceContext}: {Message}{NewLine}{Properties}{NewLine}{Exception}"
                 )).WriteTo.File(
@@ -72,7 +72,7 @@ namespace PlcMonitor.WinForm
                     retainedFileCountLimit: 31,
                     restrictedToMinimumLevel: LogEventLevel.Information,
                     buffered: true,
-                    flushToDiskInterval: TimeSpan.FromSeconds(1),
+                    flushToDiskInterval: TimeSpan.FromSeconds(2),
                     encoding: new System.Text.UTF8Encoding(encoderShouldEmitUTF8Identifier: true),
                     outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{Level:u3}] Thread:{ThreadId} {SourceContext}: {Message}{NewLine}{Properties}{NewLine}{Exception}"
                 );

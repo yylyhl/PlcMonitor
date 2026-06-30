@@ -10,7 +10,22 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="nlog.config" />
+    <None Remove="nlog.json" />
+    <None Remove="serilog.json" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Include="mtn2m-u3ar0-001.ico" />
+    <Content Include="nlog.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="nlog.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="serilog.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>

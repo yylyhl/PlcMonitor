@@ -12,7 +12,7 @@ namespace PlcMonitor.WinForm
         /// <summary>
         /// 初始化NLog并注入DI
         /// </summary>
-        public static ILoggingBuilder AddScadaNLog(this ILoggingBuilder builder, IConfiguration configuration)
+        public static ILoggingBuilder AddMonitorNLog(this ILoggingBuilder builder, IConfiguration configuration)
         {
             string configPath = Path.Combine(AppContext.BaseDirectory, "nlog.config");
             if (File.Exists(configPath))
@@ -62,7 +62,10 @@ namespace PlcMonitor.WinForm
             {
                 FileName = "logs/error-${shortdate}.log",
                 AutoFlush = false,
-                OpenFileFlushTimeout = 1,
+                KeepFileOpen = true,
+                OpenFileFlushTimeout = 2,
+                OpenFileCacheTimeout = 60,
+                BufferSize = 32768,//32kb
                 ArchiveFileName = "logs/nlog-${shortdate}.{#}.log",
                 ArchiveEvery = FileArchivePeriod.Day,
                 MaxArchiveFiles = 300,
@@ -76,7 +79,10 @@ namespace PlcMonitor.WinForm
             {
                 FileName = "logs/warn-${shortdate}.log",
                 AutoFlush = false,
-                OpenFileFlushTimeout = 1,
+                KeepFileOpen = true,
+                OpenFileFlushTimeout = 2,
+                OpenFileCacheTimeout = 60,
+                BufferSize = 32768,//32kb
                 ArchiveFileName = "logs/nlog-${shortdate}.{#}.log",
                 ArchiveEvery = FileArchivePeriod.Day,
                 MaxArchiveFiles = 300,
@@ -90,7 +96,10 @@ namespace PlcMonitor.WinForm
             {
                 FileName = "logs/nlog-${shortdate}.log",
                 AutoFlush = false,
-                OpenFileFlushTimeout = 1,
+                KeepFileOpen = true,
+                OpenFileFlushTimeout = 2,
+                OpenFileCacheTimeout = 60,
+                BufferSize = 32768,//32kb
                 ArchiveFileName = "logs/nlog-${shortdate}.{#}.log",
                 ArchiveEvery = FileArchivePeriod.Day,
                 ArchiveAboveSize = 1024 * 1024 * 10,

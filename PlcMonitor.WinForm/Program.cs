@@ -19,17 +19,18 @@ namespace PlcMonitor.WinForm
 
             var configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettingsSerilog.json", optional: false, reloadOnChange: true)
+                .AddJsonFile("serilog.json", optional: false, reloadOnChange: true)
+                .AddJsonFile("nlog.json", optional: true, reloadOnChange: true)
                 .Build();
 
             var services = new ServiceCollection();
-            services.AddLogging(factory => factory.AddScadaSerilog(configuration));
-            services.AddLogging(factory => factory.AddScadaNLog(configuration));
+            services.AddLogging(factory => factory.AddMonitorSerilog(configuration));
+            //services.AddLogging(factory => factory.AddMonitorNLog(configuration));
             services.AddTransient<MainForm>();
             ServiceProvider = services.BuildServiceProvider();
             Application.Run(ServiceProvider.GetRequiredService<MainForm>());
             LoggingSerilogExtensions.CloseSerilog();
-            LoggingNLogExtensions.CloseNLog();
+            //LoggingNLogExtensions.CloseNLog();
         }
     }
 }

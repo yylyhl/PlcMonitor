@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using PlcMonitor.Core;
 using PlcMonitor.Core.Slave;
 using System.Net.Sockets;
@@ -6,11 +7,12 @@ namespace PlcMonitor.WinForm
 {
     public partial class MainForm : Form
     {
-
+        private readonly ILogger<MainForm> _logger;
         private readonly System.Windows.Forms.Timer _timer;
-        public MainForm()
+        public MainForm(ILogger<MainForm> logger)
         {
             InitializeComponent();
+            _logger = logger;
             Text = "PLC Monitor Form";
             Location = new Point(100, 100);
             //Width = 800;
@@ -24,6 +26,8 @@ namespace PlcMonitor.WinForm
             _timer = new System.Windows.Forms.Timer();
             _timer.Tick += Timer_Tick;
             //ftimer.Start();
+            _logger.LogInformation("MainForm init done");
+            _logger.LogWarning("MainForm init done");
         }
 
         private static readonly Random _random = new();
@@ -43,7 +47,8 @@ namespace PlcMonitor.WinForm
         }
         private void statusSlaveServerTcpTxt(string message)
         {
-            statusSlaveServerTcp.Text = $"[statusSlaveServerTcp]---{message}"; ;
+            statusSlaveServerTcp.Text = $"[statusMasterTcp]---{message}";
+            _logger.LogInformation("[statusMasterTcp]---{message}", message);
         }
         ICommunicationClient _modbusTcpClient;
         private async void btnDisconnectTcp_Click(object sender, EventArgs e)
@@ -51,11 +56,12 @@ namespace PlcMonitor.WinForm
             if (!_modbusTcpClient.IsConnected) return;
             await _modbusTcpClient.DisconnectAsync();
             await Task.Delay(1500);
-            statusMasterTcp.Text = $"状态：已断开连接";
             btnConnectTcp.Enabled = true;
             txtConnectTcpStationNo.Enabled = true;
             txtConnectTcpHost.Enabled = true;
             txtConnectTcpPort.Enabled = true;
+            statusMasterTcp.Text = $"状态：已断开连接";
+            _logger.LogInformation("[statusMasterTcp]状态：已断开连接");
         }
         private async void btnConnectTcp_Click(object sender, EventArgs e)
         {
@@ -67,12 +73,14 @@ namespace PlcMonitor.WinForm
             txtConnectTcpStationNo.Enabled = false;
             btnConnectTcp.Enabled = false;
             statusMasterTcp.Text = "状态：连接中...";
+            _logger.LogInformation("[statusMasterTcp]状态：连接中...");
             var device = new Device { DeviceType = DeviceType.ModbusTcp, IpAddress = slaveHost, StationNo = slaveId, Port = port };
             _modbusTcpClient = CommunicationClientFactory.CreateClient(device);
             var ress = await _modbusTcpClient.ConnectAsync();
             if (!ress.Success)
             {
                 statusMasterTcp.Text = $"状态：[{ress.ErrorMessage}]";
+                _logger.LogInformation("[statusMasterTcp]状态：[{ErrorMessage}]", ress.ErrorMessage);
                 btnConnectTcp.Enabled = true;
                 txtConnectTcpStationNo.Enabled = true;
                 txtConnectTcpHost.Enabled = true;
@@ -80,6 +88,7 @@ namespace PlcMonitor.WinForm
                 return;
             }
             statusMasterTcp.Text = "状态：已连接";
+            _logger.LogInformation("[statusMasterTcp]状态：已连接");
             await Task.Delay(500);
             //_timer.Start();
             _ = Task.Run(async () =>
@@ -89,10 +98,11 @@ namespace PlcMonitor.WinForm
                     if (btnConnectTcp.Enabled) break;
                     var randData = _random.Next(10, 100);
                     var writeData = await _modbusTcpClient.WriteAsync("HR0", DataPointType.Float, randData);
-                    var modbusData = await _modbusTcpClient.ReadAsync("HR0", DataPointType.Float);
+                    var readData = await _modbusTcpClient.ReadAsync("HR0", DataPointType.Float);
                     this.Invoke(() =>
                     {
-                        statusMasterTcp.Text = $"data：[write={(writeData.Success ? randData : writeData.ErrorMessage)}] [read={(modbusData.Success ? modbusData.Data : modbusData.ErrorMessage)}]";
+                        statusMasterTcp.Text = $"data：[write={(writeData.Success ? randData : writeData.ErrorMessage)}] [read={(readData.Success ? readData.Data : readData.ErrorMessage)}]";
+                        _logger.LogInformation("[statusMasterTcp]data：[write={writeData}] [read={readData}]", writeData.Success ? randData : writeData.ErrorMessage, readData.Success ? readData.Data : readData.ErrorMessage);
                         //Timer_Tick(default, default);
                     });
                     Thread.Sleep(1000);
