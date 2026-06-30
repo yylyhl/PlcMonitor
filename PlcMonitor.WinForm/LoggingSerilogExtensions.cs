@@ -50,7 +50,7 @@ namespace PlcMonitor.WinForm
                     buffered: true,
                     flushToDiskInterval: TimeSpan.FromSeconds(2),
                     encoding: new System.Text.UTF8Encoding(encoderShouldEmitUTF8Identifier: true),
-                    outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{Level:u3}] Thread:{ThreadId} {SourceContext}: {Message}{NewLine}{Properties}{NewLine}{Exception}"
+                    outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{Level:u3}] Thread:{ThreadId} {SourceContext}: {Properties} {Message}{NewLine}{Exception}"
                 ).WriteTo.Logger(lc => lc.Filter.ByIncludingOnly(e => e.Level == LogEventLevel.Warning).WriteTo.File(
                     //formatter: new Serilog.Formatting.Json.JsonFormatter(),
                     path: "logs/warn-.log",
@@ -62,7 +62,7 @@ namespace PlcMonitor.WinForm
                     buffered: true,
                     flushToDiskInterval: TimeSpan.FromSeconds(2),
                     encoding: new System.Text.UTF8Encoding(encoderShouldEmitUTF8Identifier: true),
-                    outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{Level:u3}] Thread:{ThreadId} {SourceContext}: {Message}{NewLine}{Properties}{NewLine}{Exception}"
+                    outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{Level:u3}] Thread:{ThreadId} {SourceContext}: {Properties} {Message}{NewLine}{Exception}"
                 )).WriteTo.File(
                     //formatter: new Serilog.Formatting.Json.JsonFormatter(),
                     path: "logs/serilog-.log",
@@ -74,7 +74,7 @@ namespace PlcMonitor.WinForm
                     buffered: true,
                     flushToDiskInterval: TimeSpan.FromSeconds(2),
                     encoding: new System.Text.UTF8Encoding(encoderShouldEmitUTF8Identifier: true),
-                    outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{Level:u3}] Thread:{ThreadId} {SourceContext}: {Message}{NewLine}{Properties}{NewLine}{Exception}"
+                    outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{Level:u3}] Thread:{ThreadId} {SourceContext}: {Properties} {Message}{NewLine}{Exception}"
                 );
         }
 
