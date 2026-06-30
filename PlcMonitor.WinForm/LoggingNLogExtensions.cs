@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using NLog;
 using NLog.Config;
 using NLog.Extensions.Logging;
@@ -11,14 +12,15 @@ namespace PlcMonitor.WinForm
         /// <summary>
         /// 初始化NLog并注入DI
         /// </summary>
-        public static ILoggingBuilder AddScadaNLog(this ILoggingBuilder builder)
+        public static ILoggingBuilder AddScadaNLog(this ILoggingBuilder builder, IConfiguration configuration)
         {
             string configPath = Path.Combine(AppContext.BaseDirectory, "nlog.config");
             if (File.Exists(configPath))
             {
                 try
                 {
-                    LogManager.Configuration = new XmlLoggingConfiguration(configPath);
+                    //LogManager.Configuration = new XmlLoggingConfiguration(configPath);//直接赋值
+                    LogManager.Setup().LoadConfigurationFromXml(configPath);//链式加载
                 }
                 catch
                 {
@@ -27,7 +29,24 @@ namespace PlcMonitor.WinForm
             }
             else
             {
-                LogManager.Configuration = DefaultConfig();
+                var nlogSection = configuration.GetSection("NLog");
+                if (nlogSection.Exists())
+                {
+                    try
+                    {
+                        //LogManager.Configuration = new NLogLoggingConfiguration(nlogSection);//直接赋值
+                        //LogManager.ReconfigExistingLoggers();
+                        LogManager.Setup().LoadConfigurationFromSection(configuration, "NLog");//链式加载
+                    }
+                    catch
+                    {
+                        LogManager.Configuration = DefaultConfig();
+                    }
+                }
+                else
+                {
+                    LogManager.Configuration = DefaultConfig();
+                }
             }
 
             //builder.ClearProviders();

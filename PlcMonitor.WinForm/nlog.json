@@ -1,0 +1,71 @@
+{
+  "NLog": {
+    "autoReload": true,
+    "targets": {
+      "_async": true,
+      "error": {
+        "type": "File",
+        "fileName": "logs/${shortdate}.txt",
+        "archiveAboveSize": 10485760,
+        "maxArchiveFiles": 300,
+        "maxArchiveDays": 30,
+        "archiveEvery": "Day",
+        "archiveFileName": "logs/nlog-${shortdate}.{#}.log",
+        "openFileFlushTimeout": 1,
+        "autoFlush": false,
+        "layout": "${longdate} [${level:uppercase=true}] Thread:${threadid} ${logger}: ${message} ${exception:format=tostring}"
+      },
+      "warn": {
+        "type": "File",
+        "fileName": "logs/${shortdate}.txt",
+        "archiveAboveSize": 10485760,
+        "maxArchiveFiles": 300,
+        "maxArchiveDays": 30,
+        "archiveEvery": "Day",
+        "archiveFileName": "logs/nlog-${shortdate}.{#}.log",
+        "openFileFlushTimeout": 1,
+        "autoFlush": false,
+        "layout": "${longdate} [${level:uppercase=true}] Thread:${threadid} ${logger}: ${message} ${exception:format=tostring}"
+      },
+      "file": {
+        "type": "File",
+        "fileName": "logs/${shortdate}.txt",
+        "archiveAboveSize": 10485760,
+        "maxArchiveFiles": 300,
+        "maxArchiveDays": 30,
+        "archiveEvery": "Day",
+        "archiveFileName": "logs/nlog-${shortdate}.{#}.log",
+        "openFileFlushTimeout": 1,
+        "autoFlush": false,
+        "layout": "${longdate} [${level:uppercase=true}] Thread:${threadid} ${logger}: ${message} ${exception:format=tostring}"
+      },
+      "console": {
+        "type": "Console",
+        "layout": "${longdate} [${level:uppercase=true}] Thread:${threadid} ${logger}: ${message} ${exception:format=tostring}"
+      }
+    },
+    "rules": [
+      {
+        "logger": "*",
+        "minLevel": "Info",
+        "writeTo": "console"
+      },
+      {
+        "logger": "*",
+        "minLevel": "Error",
+        "writeTo": "error"
+      },
+      {
+        "logger": "*",
+        "minLevel": "Warn",
+        "maxLevel": "Warn",
+        "writeTo": "warn"
+      },
+      {
+        "logger": "*",
+        "minLevel": "Debug",
+        "writeTo": "file"
+      }
+    ]
+  }
+}

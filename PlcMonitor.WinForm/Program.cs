@@ -24,7 +24,7 @@ namespace PlcMonitor.WinForm
 
             var services = new ServiceCollection();
             services.AddLogging(factory => factory.AddScadaSerilog(configuration));
-            services.AddLogging(factory => factory.AddScadaNLog());
+            services.AddLogging(factory => factory.AddScadaNLog(configuration));
             services.AddTransient<MainForm>();
             ServiceProvider = services.BuildServiceProvider();
             Application.Run(ServiceProvider.GetRequiredService<MainForm>());
