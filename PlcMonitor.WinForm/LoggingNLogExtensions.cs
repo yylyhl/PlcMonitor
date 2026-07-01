@@ -61,7 +61,7 @@ namespace PlcMonitor.WinForm
             // 文件滚动目标
             var errorFileTarget = new FileTarget("error")
             {
-                FileName = "logs/error-${shortdate}.txt",
+                FileName = "logs/error-${shortdate}.txt",//${time} = ${date:format=HH:mm:ss.ffff}
                 AutoFlush = false,
                 KeepFileOpen = true,
                 OpenFileFlushTimeout = 2,
@@ -72,7 +72,7 @@ namespace PlcMonitor.WinForm
                 MaxArchiveFiles = 300,
                 MaxArchiveDays = 30,
                 ArchiveAboveSize = 1024 * 1024 * 10,
-                Layout = "${longdate} [${level:uppercase=true}] Thread:${threadid} ${logger}: ${message} ${exception:format=tostring}"
+                Layout = "${time} [${level:uppercase=true}] Thread:${threadid} ${logger}: ${message} ${exception:format=tostring}"
             };
             var errorFileTargetAsync = new AsyncTargetWrapper(errorFileTarget)
             {
@@ -97,7 +97,7 @@ namespace PlcMonitor.WinForm
                 MaxArchiveFiles = 300,
                 MaxArchiveDays = 30,
                 ArchiveAboveSize = 1024 * 1024 * 10,
-                Layout = "${longdate} [${level:uppercase=true}] Thread:${threadid} ${logger}: ${message} ${exception:format=tostring}"
+                Layout = "${time} [${level:uppercase=true}] Thread:${threadid} ${logger}: ${message} ${exception:format=tostring}"
             };
             var warnFileTargetAsync = new AsyncTargetWrapper(warnFileTarget)
             {
@@ -122,7 +122,7 @@ namespace PlcMonitor.WinForm
                 ArchiveAboveSize = 1024 * 1024 * 10,
                 MaxArchiveFiles = 300,
                 MaxArchiveDays = 30,
-                Layout = "${longdate} [${level:uppercase=true}] Thread:${threadid} ${logger}: ${message} ${exception:format=tostring}"
+                Layout = "${time} [${level:uppercase=true}] Thread:${threadid} ${logger}: ${message} ${exception:format=tostring}"
             };
             var fileTargetAsync = new AsyncTargetWrapper(fileTarget)
             {

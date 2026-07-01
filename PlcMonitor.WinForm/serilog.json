@@ -13,21 +13,21 @@
     ],
     "WriteTo": [
       {
+        "Name": "Console",
+        "Args": {
+          "outputTemplate": "{Timestamp:HH:mm:ss.fff} [{Level}] {Message}{NewLine}{Properties}{NewLine}{Exception}",
+          "restrictedToMinimumLevel": "Information"
+        }
+      },
+      {
         "Name": "Async",
         "Args": {
           "configure": [
             {
-              "Name": "Console",
-              "Args": {
-                "outputTemplate": "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{Level}] {Message}{NewLine}{Properties}{NewLine}{Exception}",
-                "restrictedToMinimumLevel": "Information"
-              }
-            },
-            {
               "Name": "File",
               "Args": {
                 "path": "logs/error-.txt",
-                "outputTemplate": "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{Level:u3}] {SourceContext} {Message:lj}{NewLine}{Exception}",
+                "outputTemplate": "{Timestamp:HH:mm:ss.fff} [{Level:u3}] {SourceContext} {Message:lj}{NewLine}{Exception}",
                 "restrictedToMinimumLevel": "Error",
                 "buffered": true,
                 "flushToDiskInterval": "00:00:02",
@@ -42,7 +42,7 @@
               "Name": "File",
               "Args": {
                 "path": "logs/warn-.txt",
-                "outputTemplate": "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{Level:u3}] {SourceContext} {Message:lj}{NewLine}{Exception}",
+                "outputTemplate": "{Timestamp:HH:mm:ss.fff} [{Level:u3}] {SourceContext} {Message:lj}{NewLine}{Exception}",
                 "restrictedToMinimumLevel": "Warning",
                 "buffered": true,
                 "flushToDiskInterval": "00:00:02",
@@ -52,12 +52,19 @@
                 "retainedFileCountLimit": 30,
                 "rollOnFileSizeLimit": true
               }
-            },
+            }
+          ]
+        }
+      },
+      {
+        "Name": "Async",
+        "Args": {
+          "configure": [
             {
               "Name": "File",
               "Args": {
                 "path": "logs/serilog-.txt",
-                "outputTemplate": "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{Level:u3}] {SourceContext} {Message:lj}{NewLine}{Exception}",
+                "outputTemplate": "{Timestamp:HH:mm:ss.fff} [{Level:u3}] {SourceContext} {Message:lj}{NewLine}{Exception}",
                 "restrictedToMinimumLevel": "Information",
                 "buffered": true,
                 "flushToDiskInterval": "00:00:02",
@@ -76,7 +83,7 @@
       {
         "Name": "Console",
         "Args": {
-          "outputTemplate": "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{Level}] {Message}{NewLine}{Properties}{NewLine}{Exception}",
+          "outputTemplate": "{Timestamp:HH:mm:ss.fff} [{Level}] {Message}{NewLine}{Properties}{NewLine}{Exception}",
           "restrictedToMinimumLevel": "Information"
         }
       },
@@ -84,7 +91,7 @@
         "Name": "File",
         "Args": {
           "path": "logs/error-.txt",
-          "outputTemplate": "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{Level:u3}] {SourceContext} {Message:lj}{NewLine}{Exception}",
+          "outputTemplate": "{Timestamp:HH:mm:ss.fff} [{Level:u3}] {SourceContext} {Message:lj}{NewLine}{Exception}",
           "restrictedToMinimumLevel": "Error",
           "buffered": true,
           "flushToDiskInterval": "00:00:02",
@@ -99,7 +106,7 @@
         "Name": "File",
         "Args": {
           "path": "logs/warn-.txt",
-          "outputTemplate": "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{Level:u3}] {SourceContext} {Message:lj}{NewLine}{Exception}",
+          "outputTemplate": "{Timestamp:HH:mm:ss.fff} [{Level:u3}] {SourceContext} {Message:lj}{NewLine}{Exception}",
           "restrictedToMinimumLevel": "Warning",
           "buffered": true,
           "flushToDiskInterval": "00:00:02",
@@ -114,7 +121,7 @@
         "Name": "File",
         "Args": {
           "path": "logs/serilog-.txt",
-          "outputTemplate": "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{Level:u3}] {SourceContext} {Message:lj}{NewLine}{Exception}",
+          "outputTemplate": "{Timestamp:HH:mm:ss.fff} [{Level:u3}] {SourceContext} {Message:lj}{NewLine}{Exception}",
           "restrictedToMinimumLevel": "Information",
           "buffered": true,
           "flushToDiskInterval": "00:00:02",

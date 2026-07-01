@@ -52,7 +52,7 @@
             txtSlaveServerSerialStationNo = new TextBox();
             comboBoxSlaveServerSerialMode = new ComboBox();
             comboBoxConnectSerialMode = new ComboBox();
-            textBox1 = new TextBox();
+            txtComLog = new TextBox();
             SuspendLayout();
             // 
             // btnConnectTcp
@@ -262,21 +262,21 @@
             comboBoxConnectSerialMode.TabIndex = 4;
             comboBoxConnectSerialMode.Text = "RTU";
             // 
-            // textBox1
+            // txtComLog
             // 
-            textBox1.Location = new Point(463, 12);
-            textBox1.Multiline = true;
-            textBox1.Name = "textBox1";
-            textBox1.ScrollBars = ScrollBars.Both;
-            textBox1.Size = new Size(325, 429);
-            textBox1.TabIndex = 5;
+            txtComLog.Location = new Point(463, 12);
+            txtComLog.Multiline = true;
+            txtComLog.Name = "txtComLog";
+            txtComLog.ScrollBars = ScrollBars.Both;
+            txtComLog.Size = new Size(325, 429);
+            txtComLog.TabIndex = 5;
             // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 17F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
-            Controls.Add(textBox1);
+            Controls.Add(txtComLog);
             Controls.Add(comboBoxConnectSerialMode);
             Controls.Add(comboBoxSlaveServerSerialMode);
             Controls.Add(txtConnectSerialPortName);
@@ -332,6 +332,6 @@
         private TextBox txtSlaveServerSerialStationNo;
         private ComboBox comboBoxSlaveServerSerialMode;
         private ComboBox comboBoxConnectSerialMode;
-        private TextBox textBox1;
+        private TextBox txtComLog;
     }
 }

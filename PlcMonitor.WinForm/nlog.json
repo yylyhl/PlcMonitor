@@ -20,7 +20,7 @@
           "openFileFlushTimeout": 2,
           "openFileCacheTimeout": 60,
           "bufferSize": 32768,
-          "layout": "${longdate} [${level:uppercase=true}] Thread:${threadid} ${logger}: ${message} ${exception:format=tostring}"
+          "layout": "${time} [${level:uppercase=true}] Thread:${threadid} ${logger}: ${message} ${exception:format=tostring}"
         }
       },
       "warnAsync": {
@@ -41,7 +41,7 @@
           "openFileFlushTimeout": 2,
           "openFileCacheTimeout": 60,
           "bufferSize": 32768,
-          "layout": "${longdate} [${level:uppercase=true}] Thread:${threadid} ${logger}: ${message} ${exception:format=tostring}"
+          "layout": "${time} [${level:uppercase=true}] Thread:${threadid} ${logger}: ${message} ${exception:format=tostring}"
         }
       },
       "fileAsync": {
@@ -62,7 +62,7 @@
           "openFileFlushTimeout": 2,
           "openFileCacheTimeout": 60,
           "bufferSize": 32768,
-          "layout": "${longdate} [${level:uppercase=true}] Thread:${threadid} ${logger}: ${message} ${exception:format=tostring}"
+          "layout": "${time} [${level:uppercase=true}] Thread:${threadid} ${logger}: ${message} ${exception:format=tostring}"
         }
       },
       "consoleAsync": {
@@ -72,7 +72,7 @@
         "batchSize": 200,
         "target": {
           "type": "Console",
-          "layout": "${longdate} [${level:uppercase=true}] Thread:${threadid} ${logger}: ${message} ${exception:format=tostring}"
+          "layout": "${time} [${level:uppercase=true}] Thread:${threadid} ${logger}: ${message} ${exception:format=tostring}"
         }
       }
     },
@@ -117,7 +117,7 @@
         "openFileFlushTimeout": 2,
         "openFileCacheTimeout": 60,
         "bufferSize": 32768,
-        "layout": "${longdate} [${level:uppercase=true}] Thread:${threadid} ${logger}: ${message} ${exception:format=tostring}"
+        "layout": "${time} [${level:uppercase=true}] Thread:${threadid} ${logger}: ${message} ${exception:format=tostring}"
       },
       "warn": {
         "type": "File",
@@ -132,7 +132,7 @@
         "openFileFlushTimeout": 2,
         "openFileCacheTimeout": 60,
         "bufferSize": 32768,
-        "layout": "${longdate} [${level:uppercase=true}] Thread:${threadid} ${logger}: ${message} ${exception:format=tostring}"
+        "layout": "${time} [${level:uppercase=true}] Thread:${threadid} ${logger}: ${message} ${exception:format=tostring}"
       },
       "file": {
         "type": "File",
@@ -147,11 +147,11 @@
         "openFileFlushTimeout": 2,
         "openFileCacheTimeout": 60,
         "bufferSize": 32768,
-        "layout": "${longdate} [${level:uppercase=true}] Thread:${threadid} ${logger}: ${message} ${exception:format=tostring}"
+        "layout": "${time} [${level:uppercase=true}] Thread:${threadid} ${logger}: ${message} ${exception:format=tostring}"
       },
       "console": {
         "type": "Console",
-        "layout": "${longdate} [${level:uppercase=true}] Thread:${threadid} ${logger}: ${message} ${exception:format=tostring}"
+        "layout": "${time} [${level:uppercase=true}] Thread:${threadid} ${logger}: ${message} ${exception:format=tostring}"
       }
     },
     "rules": [
