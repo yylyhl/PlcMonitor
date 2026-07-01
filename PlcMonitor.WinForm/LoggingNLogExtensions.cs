@@ -4,6 +4,7 @@ using NLog;
 using NLog.Config;
 using NLog.Extensions.Logging;
 using NLog.Targets;
+using NLog.Targets.Wrappers;
 
 namespace PlcMonitor.WinForm
 {
@@ -35,8 +36,8 @@ namespace PlcMonitor.WinForm
                     try
                     {
                         //LogManager.Configuration = new NLogLoggingConfiguration(nlogSection);//直接赋值
-                        //LogManager.ReconfigExistingLoggers();
                         LogManager.Setup().LoadConfigurationFromSection(configuration, "NLog");//链式加载
+                        //LogManager.Setup().LoadConfigurationFromSection(configuration);//链式加载
                     }
                     catch
                     {
@@ -58,64 +59,89 @@ namespace PlcMonitor.WinForm
             var config = new LoggingConfiguration();
 
             // 文件滚动目标
-            var errFileTarget = new FileTarget("error")
+            var errorFileTarget = new FileTarget("error")
             {
-                FileName = "logs/error-${shortdate}.log",
+                FileName = "logs/error-${shortdate}.txt",
                 AutoFlush = false,
                 KeepFileOpen = true,
                 OpenFileFlushTimeout = 2,
                 OpenFileCacheTimeout = 60,
                 BufferSize = 32768,//32kb
-                ArchiveFileName = "logs/nlog-${shortdate}.{#}.log",
+                ArchiveFileName = "logs/nlog-${shortdate}.{#}.txt",
                 ArchiveEvery = FileArchivePeriod.Day,
                 MaxArchiveFiles = 300,
                 MaxArchiveDays = 30,
                 ArchiveAboveSize = 1024 * 1024 * 10,
                 Layout = "${longdate} [${level:uppercase=true}] Thread:${threadid} ${logger}: ${message} ${exception:format=tostring}"
             };
-            config.AddTarget(errFileTarget);
+            var errorFileTargetAsync = new AsyncTargetWrapper(errorFileTarget)
+            {
+                QueueLimit = 10000,
+                OverflowAction = AsyncTargetWrapperOverflowAction.Discard,
+                BatchSize = 200,
+                FullBatchSizeWriteLimit = 5,
+                TimeToSleepBetweenBatches = 1,
+            };
+            config.AddTarget(errorFileTargetAsync);
 
             var warnFileTarget = new FileTarget("warn")
             {
-                FileName = "logs/warn-${shortdate}.log",
+                FileName = "logs/warn-${shortdate}.txt",
                 AutoFlush = false,
                 KeepFileOpen = true,
                 OpenFileFlushTimeout = 2,
                 OpenFileCacheTimeout = 60,
                 BufferSize = 32768,//32kb
-                ArchiveFileName = "logs/nlog-${shortdate}.{#}.log",
+                ArchiveFileName = "logs/nlog-${shortdate}.{#}.txt",
                 ArchiveEvery = FileArchivePeriod.Day,
                 MaxArchiveFiles = 300,
                 MaxArchiveDays = 30,
                 ArchiveAboveSize = 1024 * 1024 * 10,
                 Layout = "${longdate} [${level:uppercase=true}] Thread:${threadid} ${logger}: ${message} ${exception:format=tostring}"
             };
-            config.AddTarget(warnFileTarget);
+            var warnFileTargetAsync = new AsyncTargetWrapper(warnFileTarget)
+            {
+                QueueLimit = 10000,
+                OverflowAction = AsyncTargetWrapperOverflowAction.Discard,
+                BatchSize = 200,
+                FullBatchSizeWriteLimit = 5,
+                TimeToSleepBetweenBatches = 1,
+            };
+            config.AddTarget(warnFileTargetAsync);
 
             var fileTarget = new FileTarget("info")
             {
-                FileName = "logs/nlog-${shortdate}.log",
+                FileName = "logs/nlog-${shortdate}.txt",
                 AutoFlush = false,
                 KeepFileOpen = true,
                 OpenFileFlushTimeout = 2,
                 OpenFileCacheTimeout = 60,
                 BufferSize = 32768,//32kb
-                ArchiveFileName = "logs/nlog-${shortdate}.{#}.log",
+                ArchiveFileName = "logs/nlog-${shortdate}.{#}.txt",
                 ArchiveEvery = FileArchivePeriod.Day,
                 ArchiveAboveSize = 1024 * 1024 * 10,
                 MaxArchiveFiles = 300,
                 MaxArchiveDays = 30,
                 Layout = "${longdate} [${level:uppercase=true}] Thread:${threadid} ${logger}: ${message} ${exception:format=tostring}"
             };
-            config.AddTarget(fileTarget);
+            var fileTargetAsync = new AsyncTargetWrapper(fileTarget)
+            {
+                QueueLimit = 10000,
+                OverflowAction = AsyncTargetWrapperOverflowAction.Discard,
+                BatchSize = 200,
+                FullBatchSizeWriteLimit = 5,
+                TimeToSleepBetweenBatches = 1,
+            };
+            config.AddTarget(fileTargetAsync);
 
             var consoleTarget = new ConsoleTarget("console");
-            config.AddTarget(consoleTarget);
+            var consoleTargetAsync = new AsyncTargetWrapper(consoleTarget);
+            config.AddTarget(consoleTargetAsync);
 
-            config.AddRule(NLog.LogLevel.Error, NLog.LogLevel.Fatal, errFileTarget);
-            config.AddRule(NLog.LogLevel.Warn, NLog.LogLevel.Warn, warnFileTarget);
-            config.AddRule(NLog.LogLevel.Debug, NLog.LogLevel.Fatal, fileTarget);
-            config.AddRule(NLog.LogLevel.Debug, NLog.LogLevel.Fatal, consoleTarget);
+            config.AddRule(NLog.LogLevel.Error, NLog.LogLevel.Fatal, errorFileTargetAsync);
+            config.AddRule(NLog.LogLevel.Warn, NLog.LogLevel.Warn, warnFileTargetAsync);
+            config.AddRule(NLog.LogLevel.Debug, NLog.LogLevel.Fatal, fileTargetAsync);
+            config.AddRule(NLog.LogLevel.Debug, NLog.LogLevel.Fatal, consoleTargetAsync);
             return config;
         }
 

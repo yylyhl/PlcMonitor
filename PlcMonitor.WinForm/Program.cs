@@ -30,7 +30,7 @@ namespace PlcMonitor.WinForm
             ServiceProvider = services.BuildServiceProvider();
             Application.Run(ServiceProvider.GetRequiredService<MainForm>());
             LoggingSerilogExtensions.CloseSerilog();
-            //LoggingNLogExtensions.CloseNLog();
+            LoggingNLogExtensions.CloseNLog();
         }
     }
 }

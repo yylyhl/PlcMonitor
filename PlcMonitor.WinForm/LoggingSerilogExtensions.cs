@@ -13,7 +13,6 @@ namespace PlcMonitor.WinForm
         public static ILoggingBuilder AddMonitorSerilog(this ILoggingBuilder builder, IConfiguration configuration)
         {
             //Serilog.Debugging.SelfLog.Enable(msg => System.IO.File.AppendAllText("logs/serilog-selflog.txt", msg + Environment.NewLine));
-            // 全局Serilog配置，集中管理，业务层无感知
             if (configuration.GetSection("Serilog").Exists())
             {
                 Log.Logger = new LoggerConfiguration()
@@ -29,9 +28,6 @@ namespace PlcMonitor.WinForm
             builder.AddSerilog(dispose: true);// 桥接到Microsoft.Extensions.Logging抽象
             return builder;
         }
-        /// <summary>
-        /// 默认日志预设
-        /// </summary>
         private static LoggerConfiguration DefaultConfig()
         {
             return new LoggerConfiguration()
@@ -39,9 +35,9 @@ namespace PlcMonitor.WinForm
                 .MinimumLevel.Debug()//{Message:lj}// lj = literal json，消息自动转义换行、引号，打印干净单行
                 .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
                 //.WriteTo.Console(outputTemplate:"[{Timestamp:HH:mm:ss} {Level:u3}] {ThreadId} {SourceContext} | {Message:lj}{NewLine}{Exception}")
-                .WriteTo.File(
+                .WriteTo.Async(a => a.File(
                     //formatter: new Serilog.Formatting.Json.JsonFormatter(),
-                    path: "logs/error-.log",
+                    path: "logs/error-.txt",
                     rollingInterval: RollingInterval.Day,
                     fileSizeLimitBytes: 1024 * 1024 * 10,  // 10MB
                     rollOnFileSizeLimit: true,
@@ -51,9 +47,9 @@ namespace PlcMonitor.WinForm
                     flushToDiskInterval: TimeSpan.FromSeconds(2),
                     encoding: new System.Text.UTF8Encoding(encoderShouldEmitUTF8Identifier: true),
                     outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{Level:u3}] Thread:{ThreadId} {SourceContext}: {Properties} {Message}{NewLine}{Exception}"
-                ).WriteTo.Logger(lc => lc.Filter.ByIncludingOnly(e => e.Level == LogEventLevel.Warning).WriteTo.File(
+                )).WriteTo.Async(a => a.Logger(lc => lc.Filter.ByIncludingOnly(e => e.Level == LogEventLevel.Warning).WriteTo.File(
                     //formatter: new Serilog.Formatting.Json.JsonFormatter(),
-                    path: "logs/warn-.log",
+                    path: "logs/warn-.txt",
                     rollingInterval: RollingInterval.Day,
                     fileSizeLimitBytes: 1024 * 1024 * 10,  // 10MB
                     rollOnFileSizeLimit: true,
@@ -63,9 +59,9 @@ namespace PlcMonitor.WinForm
                     flushToDiskInterval: TimeSpan.FromSeconds(2),
                     encoding: new System.Text.UTF8Encoding(encoderShouldEmitUTF8Identifier: true),
                     outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{Level:u3}] Thread:{ThreadId} {SourceContext}: {Properties} {Message}{NewLine}{Exception}"
-                )).WriteTo.File(
+                ))).WriteTo.Async(a => a.File(
                     //formatter: new Serilog.Formatting.Json.JsonFormatter(),
-                    path: "logs/serilog-.log",
+                    path: "logs/serilog-.txt",
                     rollingInterval: RollingInterval.Day,
                     fileSizeLimitBytes: 1024 * 1024 * 10,  // 10MB
                     rollOnFileSizeLimit: true,
@@ -75,7 +71,7 @@ namespace PlcMonitor.WinForm
                     flushToDiskInterval: TimeSpan.FromSeconds(2),
                     encoding: new System.Text.UTF8Encoding(encoderShouldEmitUTF8Identifier: true),
                     outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{Level:u3}] Thread:{ThreadId} {SourceContext}: {Properties} {Message}{NewLine}{Exception}"
-                );
+                ));
         }
 
         /// <summary>
