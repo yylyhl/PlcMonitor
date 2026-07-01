@@ -27,9 +27,9 @@ namespace PlcMonitor.WinForm
             _timer.Tick += Timer_Tick;
             //ftimer.Start();
             _logger.LogWarning("MainForm init done");
-            WriteLog("MainForm init done");
+            WriteTxtComLog("MainForm init done");
         }
-        private void WriteLog(string message)
+        private void WriteTxtComLog(string message)
         {
             txtComLog.AppendText($"[{DateTime.Now:HH:mm:ss}] {message}{Environment.NewLine}");
             #region 倒序，新的在上面
@@ -38,7 +38,14 @@ namespace PlcMonitor.WinForm
             //txtComLog.SelectedText = $"[{DateTime.Now:HH:mm:ss}] {message}{Environment.NewLine}";
             //txtComLog.ResumeLayout(); 
             #endregion
+        }
+        private void WriteLog(string message)
+        {
             _logger.LogInformation(message);
+            this.Invoke(() =>
+            {
+                WriteTxtComLog(message);
+            });
         }
 
         private static readonly Random _random = new();
@@ -108,8 +115,8 @@ namespace PlcMonitor.WinForm
                 {
                     if (btnConnectTcp.Enabled) break;
                     var randData = _random.Next(10, 100);
-                    var writeData = await _modbusTcpClient.WriteAsync("HR0", DataPointType.Float, randData);
-                    var readData = await _modbusTcpClient.ReadAsync("HR0", DataPointType.Float);
+                    var writeData = await _modbusTcpClient.WriteAsync(ModbusFunction.HR + "1", DataPointType.Float, randData);
+                    var readData = await _modbusTcpClient.ReadAsync(ModbusFunction.HR + "1", DataPointType.Float);
                     this.Invoke(() =>
                     {
                         statusMasterTcp.Text = $"data：[write={(writeData.Success ? randData : writeData.ErrorMessage)}] [read={(readData.Success ? readData.Data : readData.ErrorMessage)}]";
@@ -185,8 +192,8 @@ namespace PlcMonitor.WinForm
                 {
                     if (btnConnectSerial.Enabled) break;
                     var randData = _random.Next(10, 100);
-                    var writeData = await _modbusSerialPortClient.WriteAsync("HR4", DataPointType.Float, randData);
-                    var readData = await _modbusSerialPortClient.ReadAsync("HR4", DataPointType.Float);
+                    var writeData = await _modbusSerialPortClient.WriteAsync(ModbusFunction.HR + "1", DataPointType.Float, randData);
+                    var readData = await _modbusSerialPortClient.ReadAsync(ModbusFunction.HR + "1", DataPointType.Float);
                     this.Invoke(() =>
                     {
                         statusMasterSerial.Text = $"data：[write={(writeData.Success ? randData : writeData.ErrorMessage)}] [read={(readData.Success ? readData.Data : readData.ErrorMessage)}]";
@@ -241,7 +248,7 @@ namespace PlcMonitor.WinForm
         {
             this.Invoke(() =>
             {
-                statusSlaveServerTcp.Text = message;
+                statusSlaveServerTcp.Text = $"[{DateTime.Now:HH:mm:ss}]{message}";
             });
             WriteLog($"[statusSlaveServerTcp]{message}");
         }
@@ -266,10 +273,10 @@ namespace PlcMonitor.WinForm
             //dataStore.HoldingRegisters.WritePoints(0, new ushort[] { 123, 456 });//自定义数据存储-寄存器值
             //dataStore.CoilDiscretes.WritePoints(0, new[] { true, false, true });//自定义数据存储-预设线圈
             var dataStore = new EventDrivenDataStore();//数据存储
-            dataStore.CoilDiscretes.StorageOperationOccurred += (sender, args) => OutputSlaveServerTcpStatus($"[{args.Operation} 线圈]:[{DateTime.Now:HH:mm:ss}] 起始地址:{args.StartingAddress} 数量:{args.NumberOfPoints} 值:[{string.Join(", ", args.Points)}]");
-            dataStore.CoilInputs.StorageOperationOccurred += (sender, args) => OutputSlaveServerTcpStatus($"[{args.Operation} 离散输入]: [{DateTime.Now:HH:mm:ss}] 起始地址:{args.StartingAddress} 值:[{string.Join(", ", args.Points)}]");
-            dataStore.InputRegisters.StorageOperationOccurred += (sender, args) => OutputSlaveServerTcpStatus($"[{args.Operation} 输入寄存器]: [{DateTime.Now:HH:mm:ss}] 起始地址:{args.StartingAddress} 值:[{string.Join(", ", args.Points)}]");
-            dataStore.HoldingRegisters.StorageOperationOccurred += (sender, args) => OutputSlaveServerTcpStatus($"[{args.Operation} 保持寄存器]: [{DateTime.Now:HH:mm:ss}] 起始地址:{args.StartingAddress} 数量:{args.NumberOfPoints} 值:[{string.Join(", ", args.Points)}]");
+            dataStore.CoilDiscretes.StorageOperationOccurred += (sender, args) => OutputSlaveServerTcpStatus($"[{args.Operation} 线圈]: 起始地址:{args.StartingAddress} 数量:{args.NumberOfPoints} 值:[{string.Join(", ", args.Points)}]");
+            dataStore.CoilInputs.StorageOperationOccurred += (sender, args) => OutputSlaveServerTcpStatus($"[{args.Operation} 离散输入]: 起始地址:{args.StartingAddress} 值:[{string.Join(", ", args.Points)}]");
+            dataStore.InputRegisters.StorageOperationOccurred += (sender, args) => OutputSlaveServerTcpStatus($"[{args.Operation} 输入寄存器]: 起始地址:{args.StartingAddress} 值:[{string.Join(", ", args.Points)}]");
+            dataStore.HoldingRegisters.StorageOperationOccurred += (sender, args) => OutputSlaveServerTcpStatus($"[{args.Operation} 保持寄存器]: 起始地址:{args.StartingAddress} 数量:{args.NumberOfPoints} 值:[{string.Join(", ", args.Points)}]");
 
             var slave = factory.CreateSlave(slaveId, dataStore);//创建Slave（指定站号+数据存储）
             _slaveNetwork.AddSlave(slave);//将Slave添加到网络中
@@ -328,7 +335,7 @@ namespace PlcMonitor.WinForm
         {
             this.Invoke(() =>
             {
-                statusSlaveServerSerial.Text = message;
+                statusSlaveServerSerial.Text = $"[{DateTime.Now:HH:mm:ss}]{message}";
             });
             WriteLog($"[statusSlaveServerSerial]{message}");
         }
@@ -357,19 +364,19 @@ namespace PlcMonitor.WinForm
             //绑定读写事件，打印主站操作
             server.HoldingRegistersStorageOperationOccurred += (slaveId, opera, addr, data, count) =>
             {
-                OutputSlaveServerSerialStatus($"[{opera} 保持寄存器] [{DateTime.Now:HH:mm:ss}]站号:{slaveId} 起始地址:{addr} 数量:{count} 值:[{string.Join(", ", data)}]");
+                OutputSlaveServerSerialStatus($"[{opera} 保持寄存器] 站号:{slaveId} 起始地址:{addr} 数量:{count} 值:[{string.Join(", ", data)}]");
             };
             server.InputRegistersStorageOperationOccurred += (slaveId, opera, addr, data) =>
             {
-                OutputSlaveServerSerialStatus($"[{opera} 输入寄存器] [{DateTime.Now:HH:mm:ss}]站号:{slaveId} 起始地址:{addr} 值:[{string.Join(", ", data)}]");
+                OutputSlaveServerSerialStatus($"[{opera} 输入寄存器] 站号:{slaveId} 起始地址:{addr} 值:[{string.Join(", ", data)}]");
             };
             server.CoilDiscretesStorageOperationOccurred += (slaveId, opera, addr, data, count) =>
             {
-                OutputSlaveServerSerialStatus($"[{opera} 线圈] [{DateTime.Now:HH:mm:ss}]站号:{slaveId} 起始地址:{addr} 数量:{count} 值:[{string.Join(", ", data)}]");
+                OutputSlaveServerSerialStatus($"[{opera} 线圈] 站号:{slaveId} 起始地址:{addr} 数量:{count} 值:[{string.Join(", ", data)}]");
             };
             server.CoilInputsStorageOperationOccurred += (slaveId, opera, addr, data) =>
             {
-                OutputSlaveServerSerialStatus($"[{opera} 离散输入] [{DateTime.Now:HH:mm:ss}]站号:{slaveId} 起始地址:{addr} 值:[{string.Join(", ", data)}]");
+                OutputSlaveServerSerialStatus($"[{opera} 离散输入] 站号:{slaveId} 起始地址:{addr} 值:[{string.Join(", ", data)}]");
             };
 
             try

@@ -33,4 +33,23 @@
         RTU,
         ASCII,
     }
+    public enum ModbusFunction
+    {
+        /// <summary>
+        /// Coils [Read/Write]
+        /// </summary>
+        Coil = 0,
+        /// <summary>
+        /// Discrete inputs 
+        /// </summary>
+        DI = 1,
+        /// <summary>
+        /// Holding registers [Read/Write]
+        /// </summary>
+        HR = 4,
+        /// <summary>
+        /// Input registers [Read Only]
+        /// </summary>
+        IR = 3,
+    }
 }
