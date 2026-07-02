@@ -214,13 +214,14 @@ namespace PlcMonitor.WinForm
             btnStopSlaveServerTcp.Click += btnStopSlaveServerTcp_Click;
             Controls.Add(btnStopSlaveServerTcp);
         }
-
+        ModbusTcpSlave? _modbusTcpSlave;
         private TcpListener? _tcpListener;
         private NModbus.IModbusSlaveNetwork? _slaveNetwork;
         private Task? _tcpListenTask;
         private CancellationTokenSource? _ctsTcpListenTask;
         private async void btnStopSlaveServerTcp_Click(object sender, EventArgs e)
         {
+            await _modbusTcpSlave?.StopAsync();
             try
             {
                 _ctsTcpListenTask?.Cancel();
@@ -237,11 +238,11 @@ namespace PlcMonitor.WinForm
                 _tcpListenTask = null;
                 _ctsTcpListenTask?.Dispose();
                 _ctsTcpListenTask = null;
+
                 txtSlaveServerTcpPort.Enabled = true;
                 btnStartSlaveServerTcp.Enabled = true;
                 statusSlaveServerTcp.Text = "状态：已停止";
                 WriteLog($"[statusSlaveServerTcp]状态：已停止");
-                //OnLog?.Invoke("从站服务已停止");
             }
         }
         private void OutputSlaveServerTcpStatus(string message)
@@ -254,6 +255,38 @@ namespace PlcMonitor.WinForm
         }
         private async void btnStartSlaveServerTcp_Click(object sender, EventArgs e)
         {
+            _ = byte.TryParse(txtSlaveServerTcpStationNo.Text, out var slaveId);
+            txtSlaveServerTcpStationNo.Enabled = false;
+            _ = int.TryParse(txtSlaveServerTcpPort.Text, out var port);
+            txtSlaveServerTcpPort.Enabled = false;
+            btnStartSlaveServerTcp.Enabled = false;
+            statusSlaveServerTcp.Text = "状态：启动中...";
+            WriteLog($"[statusSlaveServerTcp]状态：启动中...");
+
+            _modbusTcpSlave = new ModbusTcpSlave("127.0.0.1", port);
+            _modbusTcpSlave.AddSlave(slaveId);
+            _modbusTcpSlave.OnLog += msg => OutputSlaveServerTcpStatus(msg);//绑定日志事件
+            //绑定读写事件，打印主站操作
+            _modbusTcpSlave.HoldingRegistersStorageOperationOccurred += (slaveId, opera, addr, data, count) =>
+            {
+                OutputSlaveServerTcpStatus($"[{opera} 保持寄存器] 站号:{slaveId} 起始地址:{addr} 数量:{count} 值:[{string.Join(", ", data)}]");
+            };
+            _modbusTcpSlave.InputRegistersStorageOperationOccurred += (slaveId, opera, addr, data) =>
+            {
+                OutputSlaveServerTcpStatus($"[{opera} 输入寄存器] 站号:{slaveId} 起始地址:{addr} 值:[{string.Join(", ", data)}]");
+            };
+            _modbusTcpSlave.CoilDiscretesStorageOperationOccurred += (slaveId, opera, addr, data, count) =>
+            {
+                OutputSlaveServerTcpStatus($"[{opera} 线圈] 站号:{slaveId} 起始地址:{addr} 数量:{count} 值:[{string.Join(", ", data)}]");
+            };
+            _modbusTcpSlave.CoilInputsStorageOperationOccurred += (slaveId, opera, addr, data) =>
+            {
+                OutputSlaveServerTcpStatus($"[{opera} 离散输入] 站号:{slaveId} 起始地址:{addr} 值:[{string.Join(", ", data)}]");
+            };
+            await _modbusTcpSlave.StartAsync();
+        }
+        private async void btnStartSlaveServerTcp_Click2(object sender, EventArgs e)
+        {
             if (_tcpListenTask != null && !_ctsTcpListenTask!.IsCancellationRequested) return;//从站服务已在运行
 
             _ = byte.TryParse(txtSlaveServerTcpStationNo.Text, out var slaveId);
@@ -263,6 +296,7 @@ namespace PlcMonitor.WinForm
             btnStartSlaveServerTcp.Enabled = false;
             statusSlaveServerTcp.Text = "状态：启动中...";
             WriteLog($"[statusSlaveServerTcp]状态：启动中...");
+
             _ctsTcpListenTask = new CancellationTokenSource();
             _tcpListener = new TcpListener(System.Net.IPAddress.Any, port);
 
@@ -320,9 +354,10 @@ namespace PlcMonitor.WinForm
             comboBoxSlaveServerSerialMode.SelectedIndex = 0;
             Controls.Add(comboBoxSlaveServerSerialMode);
         }
-
+        ModbusSerialSlave? _modbusSerialSlave = null;
         private async void btnStopSlaveServerSerial_Click(object sender, EventArgs e)
         {
+            await _modbusSerialSlave?.StopAsync();
             await Task.Delay(1500);
             comboBoxSlaveServerSerialMode.Enabled = true;
             txtSlaveServerSerialStationNo.Enabled = true;
@@ -357,32 +392,32 @@ namespace PlcMonitor.WinForm
                 StationNo = slaveId,
                 SerialMode = mode?.ToString() == SerialMode.ASCII.ToString() ? SerialMode.ASCII : SerialMode.RTU
             };
-            var server = new ModbusSerialSlave(device);
-            server.AddSlave(slaveId);//添加站号1的从站（与你上位机主站代码对应）
-            server.OnLog += msg => OutputSlaveServerSerialStatus($"[系统] {DateTime.Now:HH:mm:ss} {msg}");//绑定日志事件
+            _modbusSerialSlave = new ModbusSerialSlave(device);
+            _modbusSerialSlave.AddSlave(slaveId);//添加站号1的从站（与你上位机主站代码对应）
+            _modbusSerialSlave.OnLog += msg => OutputSlaveServerSerialStatus(msg);//绑定日志事件
 
             //绑定读写事件，打印主站操作
-            server.HoldingRegistersStorageOperationOccurred += (slaveId, opera, addr, data, count) =>
+            _modbusSerialSlave.HoldingRegistersStorageOperationOccurred += (slaveId, opera, addr, data, count) =>
             {
                 OutputSlaveServerSerialStatus($"[{opera} 保持寄存器] 站号:{slaveId} 起始地址:{addr} 数量:{count} 值:[{string.Join(", ", data)}]");
             };
-            server.InputRegistersStorageOperationOccurred += (slaveId, opera, addr, data) =>
+            _modbusSerialSlave.InputRegistersStorageOperationOccurred += (slaveId, opera, addr, data) =>
             {
                 OutputSlaveServerSerialStatus($"[{opera} 输入寄存器] 站号:{slaveId} 起始地址:{addr} 值:[{string.Join(", ", data)}]");
             };
-            server.CoilDiscretesStorageOperationOccurred += (slaveId, opera, addr, data, count) =>
+            _modbusSerialSlave.CoilDiscretesStorageOperationOccurred += (slaveId, opera, addr, data, count) =>
             {
                 OutputSlaveServerSerialStatus($"[{opera} 线圈] 站号:{slaveId} 起始地址:{addr} 数量:{count} 值:[{string.Join(", ", data)}]");
             };
-            server.CoilInputsStorageOperationOccurred += (slaveId, opera, addr, data) =>
+            _modbusSerialSlave.CoilInputsStorageOperationOccurred += (slaveId, opera, addr, data) =>
             {
                 OutputSlaveServerSerialStatus($"[{opera} 离散输入] 站号:{slaveId} 起始地址:{addr} 值:[{string.Join(", ", data)}]");
             };
 
             try
             {
-                
-                await server.StartAsync();// 启动服务
+
+                await _modbusSerialSlave.StartAsync();// 启动服务
 
                 //// 6. 模拟硬件数据：每秒更新温度（HR0，float）和压力（HR2，float）
                 //var random = new Random();
@@ -417,7 +452,7 @@ namespace PlcMonitor.WinForm
                 btnStartSlaveServerSerial.Enabled = true;
                 statusSlaveServerSerial.Text = $"程序已退出，运行错误: {ex.Message}";
                 WriteLog($"[statusSlaveServerSerial]程序已退出，运行错误: {ex.Message}");
-                await server.StopAsync();
+                await _modbusSerialSlave.StopAsync();
             }
         }
         #endregion

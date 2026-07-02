@@ -5,7 +5,7 @@ using System.Net.Sockets;
 namespace PlcMonitor.Core.Slave
 {
     /// <summary>
-    /// Modbus TCP从站服务，支持多从站、读写事件、数据模拟、受控启停
+    /// Modbus Serial从站服务，支持多从站、读写事件、数据模拟、受控启停
     /// </summary>
     public class ModbusSerialSlave : IDisposable
     {
@@ -59,7 +59,7 @@ namespace PlcMonitor.Core.Slave
         public void AddSlave(byte slaveId)
         {
             if (SlaveStores.ContainsKey(slaveId))
-                throw new InvalidOperationException($"从站 {slaveId} 已存在");
+                throw new InvalidOperationException($"[ModbusSerialSlave]从站 {slaveId} 已存在");
 
             var dataStore = new EventDrivenDataStore();
 
@@ -76,16 +76,16 @@ namespace PlcMonitor.Core.Slave
                 => CoilInputsStorageOperationOccurred?.Invoke(slaveId, args.Operation, args.StartingAddress, args.Points);
 
             SlaveStores[slaveId] = dataStore;
-            OnLog?.Invoke($"已添加从站，站号: {slaveId}");
+            OnLog?.Invoke($"[ModbusSerialSlave]已添加从站 {slaveId}");
         }
-
+        private string SlaveIds { get { return string.Join(',', SlaveStores.Keys); } }
         /// <summary>
         /// 启动从站服务
         /// </summary>
         public async Task StartAsync()
         {
             if (_listenTask != null && !_cts!.IsCancellationRequested)
-                throw new InvalidOperationException("从站服务已在运行");
+                throw new InvalidOperationException($"[ModbusSerialSlave]从站 [{SlaveIds}] 服务已在运行");
 
             try
             {
@@ -134,14 +134,14 @@ namespace PlcMonitor.Core.Slave
                     }
                     catch (Exception ex)
                     {
-                        OnLog?.Invoke($"监听异常: {ex.Message}");
+                        OnLog?.Invoke($"[ModbusSerialSlave]从站 [{SlaveIds}] 监听异常: {ex.Message}");
                     }
                 }, _cts.Token);
-                OnLog?.Invoke($"Modbus SerialRtu从站服务已启动，监听:{_serialPort.PortName}, 站号[{string.Join(',', SlaveStores.Keys)}]");
+                OnLog?.Invoke($"[ModbusSerialSlave]从站 [{SlaveIds}] 服务已启动，监听:{_serialPort.PortName}, 站号[{string.Join(',', SlaveStores.Keys)}]");
             }
             catch (SocketException ex)
             {
-                OnLog?.Invoke($"启动失败，端口 {DeviceInfo?.PortName} 被占用或无权限: {ex.Message}");
+                OnLog?.Invoke($"[ModbusSerialSlave]从站 [{SlaveIds}] 启动失败，端口 {DeviceInfo?.PortName} 被占用或无权限: {ex.Message}");
                 throw;
             }
         }
@@ -167,7 +167,7 @@ namespace PlcMonitor.Core.Slave
                 _serialPort = null;
                 _cts?.Dispose();
                 _cts = null;
-                OnLog?.Invoke("从站服务已停止");
+                OnLog?.Invoke($"[ModbusSerialSlave]从站 [{SlaveIds}] 服务已停止");
             }
         }
 
