@@ -1,6 +1,5 @@
 using Microsoft.Extensions.Logging;
 using PlcMonitor.Core;
-using PlcMonitor.Core.Slave;
 using System.Net.Sockets;
 
 namespace PlcMonitor.WinForm
@@ -83,6 +82,11 @@ namespace PlcMonitor.WinForm
         }
         private async void btnConnectTcp_Click(object sender, EventArgs e)
         {
+            if (_modbusTcpClient.IsConnected)
+            {
+                MessageBox.Show("已连接", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
             var slaveHost = txtConnectTcpHost.Text ?? "127.0.0.1";
             txtConnectTcpHost.Enabled = false;
             _ = int.TryParse(txtConnectTcpPort.Text, out var port);
@@ -141,11 +145,11 @@ namespace PlcMonitor.WinForm
             comboBoxConnectSerialMode.SelectedIndex = 0;
             Controls.Add(comboBoxConnectSerialMode);
         }
-        ICommunicationClient _modbusSerialPortClient;
+        ICommunicationClient _modbusSerialClient;
         private async void btnDisconnectSerial_Click(object sender, EventArgs e)
         {
-            if (!_modbusSerialPortClient.IsConnected) return;
-            await _modbusSerialPortClient.DisconnectAsync();
+            if (!_modbusSerialClient.IsConnected) return;
+            await _modbusSerialClient.DisconnectAsync();
             await Task.Delay(1500);
             btnConnectSerial.Enabled = true;
             txtConnectSerialStationNo.Enabled = true;
@@ -156,6 +160,11 @@ namespace PlcMonitor.WinForm
         }
         private async void btnConnectSerial_Click(object sender, EventArgs e)
         {
+            if (_modbusSerialClient.IsConnected)
+            {
+                MessageBox.Show("已连接", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
             var portName = txtConnectSerialPortName.Text ?? "COM4";
             txtConnectSerialPortName.Enabled = false;
             _ = byte.TryParse(txtConnectSerialStationNo.Text, out var slaveId);
@@ -172,8 +181,8 @@ namespace PlcMonitor.WinForm
                 StationNo = slaveId,
                 SerialMode = mode?.ToString() == SerialMode.ASCII.ToString() ? SerialMode.ASCII : SerialMode.RTU
             };
-            _modbusSerialPortClient = CommunicationClientFactory.CreateClient(device);
-            var ress = await _modbusSerialPortClient.ConnectAsync();
+            _modbusSerialClient = CommunicationClientFactory.CreateClient(device);
+            var ress = await _modbusSerialClient.ConnectAsync();
             if (!ress.Success)
             {
                 btnConnectSerial.Enabled = true;
@@ -192,8 +201,8 @@ namespace PlcMonitor.WinForm
                 {
                     if (btnConnectSerial.Enabled) break;
                     var randData = _random.Next(10, 100);
-                    var writeData = await _modbusSerialPortClient.WriteAsync(ModbusFunction.HR + "1", DataPointType.Float, randData);
-                    var readData = await _modbusSerialPortClient.ReadAsync(ModbusFunction.HR + "1", DataPointType.Float);
+                    var writeData = await _modbusSerialClient.WriteAsync(ModbusFunction.HR + "1", DataPointType.Float, randData);
+                    var readData = await _modbusSerialClient.ReadAsync(ModbusFunction.HR + "1", DataPointType.Float);
                     this.Invoke(() =>
                     {
                         statusMasterSerial.Text = $"data：[write={(writeData.Success ? randData : writeData.ErrorMessage)}] [read={(readData.Success ? readData.Data : readData.ErrorMessage)}]";
@@ -214,7 +223,7 @@ namespace PlcMonitor.WinForm
             btnStopSlaveServerTcp.Click += btnStopSlaveServerTcp_Click;
             Controls.Add(btnStopSlaveServerTcp);
         }
-        ModbusTcpSlave? _modbusTcpSlave;
+        ModbusTcpSlave _modbusTcpSlave;
         private TcpListener? _tcpListener;
         private NModbus.IModbusSlaveNetwork? _slaveNetwork;
         private Task? _tcpListenTask;
@@ -255,6 +264,11 @@ namespace PlcMonitor.WinForm
         }
         private async void btnStartSlaveServerTcp_Click(object sender, EventArgs e)
         {
+            if (_modbusTcpSlave.IsStarted)
+            {
+                MessageBox.Show("已启动", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
             _ = byte.TryParse(txtSlaveServerTcpStationNo.Text, out var slaveId);
             txtSlaveServerTcpStationNo.Enabled = false;
             _ = int.TryParse(txtSlaveServerTcpPort.Text, out var port);
@@ -263,8 +277,12 @@ namespace PlcMonitor.WinForm
             statusSlaveServerTcp.Text = "状态：启动中...";
             WriteLog($"[statusSlaveServerTcp]状态：启动中...");
 
-            _modbusTcpSlave = new ModbusTcpSlave("127.0.0.1", port);
-            _modbusTcpSlave.AddSlave(slaveId);
+            _modbusTcpSlave = new ModbusTcpSlave(new Device() { IpAddress = "127.0.0.1", Port = port });
+            if (!_modbusTcpSlave.AddSlave(slaveId, out var msg))
+            {
+                MessageBox.Show(msg, "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }//添加从站（与上位机主站代码对应）
             _modbusTcpSlave.OnLog += msg => OutputSlaveServerTcpStatus(msg);//绑定日志事件
             //绑定读写事件，打印主站操作
             _modbusTcpSlave.HoldingRegistersStorageOperationOccurred += (slaveId, opera, addr, data, count) =>
@@ -287,7 +305,11 @@ namespace PlcMonitor.WinForm
         }
         private async void btnStartSlaveServerTcp_Click2(object sender, EventArgs e)
         {
-            if (_tcpListenTask != null && !_ctsTcpListenTask!.IsCancellationRequested) return;//从站服务已在运行
+            if (_tcpListenTask != null && !_ctsTcpListenTask!.IsCancellationRequested)
+            {
+                MessageBox.Show("已启动", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
 
             _ = byte.TryParse(txtSlaveServerTcpStationNo.Text, out var slaveId);
             txtSlaveServerTcpStationNo.Enabled = false;
@@ -354,7 +376,8 @@ namespace PlcMonitor.WinForm
             comboBoxSlaveServerSerialMode.SelectedIndex = 0;
             Controls.Add(comboBoxSlaveServerSerialMode);
         }
-        ModbusSerialSlave? _modbusSerialSlave = null;
+        ICommunicationServer _modbusSerialSlave;
+        //ModbusSerialSlave _modbusSerialSlave = null;
         private async void btnStopSlaveServerSerial_Click(object sender, EventArgs e)
         {
             await _modbusSerialSlave?.StopAsync();
@@ -376,6 +399,11 @@ namespace PlcMonitor.WinForm
         }
         private async void btnStartSlaveServerSerial_Click(object sender, EventArgs e)
         {
+            if (_modbusSerialSlave.IsStarted)
+            {
+                MessageBox.Show("已启动", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
             btnStartSlaveServerSerial.Enabled = false;
             statusSlaveServerSerial.Text = "状态：启动中...";
             WriteLog($"[statusSlaveServerSerial]状态：启动中...");
@@ -392,8 +420,13 @@ namespace PlcMonitor.WinForm
                 StationNo = slaveId,
                 SerialMode = mode?.ToString() == SerialMode.ASCII.ToString() ? SerialMode.ASCII : SerialMode.RTU
             };
-            _modbusSerialSlave = new ModbusSerialSlave(device);
-            _modbusSerialSlave.AddSlave(slaveId);//添加站号1的从站（与你上位机主站代码对应）
+            //_modbusSerialSlave = new ModbusSerialSlave(device);
+            _modbusSerialSlave = CommunicationServerFactory.CreateServer(device);
+            if (!_modbusSerialSlave.AddSlave(slaveId, out var msg))
+            {
+                MessageBox.Show(msg, "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }//添加从站（与上位机主站代码对应）
             _modbusSerialSlave.OnLog += msg => OutputSlaveServerSerialStatus(msg);//绑定日志事件
 
             //绑定读写事件，打印主站操作

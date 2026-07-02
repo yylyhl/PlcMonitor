@@ -1,7 +1,6 @@
 ﻿using NModbus;
 using NModbus.Serial;
 using System.IO.Ports;
-using System.Net;
 
 namespace PlcMonitor.Core
 {
