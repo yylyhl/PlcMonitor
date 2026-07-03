@@ -7,6 +7,10 @@
         public DeviceType DeviceType { get; set; }
         public string IpAddress { get; set; } = "127.0.0.1";
         public int Port { get; set; }
+        /// <summary>
+        /// Modbus站号
+        /// </summary>
+        public byte SlaveId { get; set; } = 1;
 
         #region 串口专用
         public SerialMode SerialMode { get; set; } = SerialMode.RTU;
@@ -17,16 +21,16 @@
         public System.IO.Ports.StopBits? StopBits { get; set; } = System.IO.Ports.StopBits.One; 
         #endregion
 
+        #region S7
         /// <summary>
-        /// Modbus站号 / S7机架号
-        /// </summary>
-        public byte StationNo { get; set; } = 1;
-
-        /// <summary>
-        /// S7槽号
+        /// S7插槽：S7-300/400CPU=2；1200/1500=1；200SMART=1
         /// </summary>
         public int Slot { get; set; } = 1;
-        public int Rack { get; set; } = 0;
+        /// <summary>
+        /// S7机架：S7-300/400=0；S7-1200/1500/200SMART=0
+        /// </summary>
+        public int Rack { get; set; } = 0; 
+        #endregion
 
         #region OPC UA
         public string OpcEndpointUrl { get; set; } = string.Empty;

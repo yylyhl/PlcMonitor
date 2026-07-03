@@ -106,21 +106,21 @@ namespace PlcMonitor.Core
                 {
                     case "HR":
                         ushort len = GetRegisterLength(dataType);
-                        registers = await _master.ReadHoldingRegistersAsync(DeviceInfo.StationNo, startAddr, len);
+                        registers = await _master.ReadHoldingRegistersAsync(DeviceInfo.SlaveId, startAddr, len);
                         return CommunicationResult<object?>.Ok(ConvertRegisters(registers, dataType));
 
                     case "IR":
                         ushort lenIr = GetRegisterLength(dataType);
-                        registers = await _master.ReadInputRegistersAsync(DeviceInfo.StationNo, startAddr, lenIr);
+                        registers = await _master.ReadInputRegistersAsync(DeviceInfo.SlaveId, startAddr, lenIr);
                         return CommunicationResult<object?>.Ok(ConvertRegisters(registers, dataType));
 
                     case "C":
                     case "COIL":
-                        bool[] coils = await _master.ReadCoilsAsync(DeviceInfo.StationNo, startAddr, 1);
+                        bool[] coils = await _master.ReadCoilsAsync(DeviceInfo.SlaveId, startAddr, 1);
                         return CommunicationResult<object?>.Ok(coils[0]);
 
                     case "DI":
-                        bool[] dis = await _master.ReadInputsAsync(DeviceInfo.StationNo, startAddr, 1);
+                        bool[] dis = await _master.ReadInputsAsync(DeviceInfo.SlaveId, startAddr, 1);
                         return CommunicationResult<object?>.Ok(dis[0]);
 
                     default:
@@ -145,7 +145,7 @@ namespace PlcMonitor.Core
 
                 if (area is "C" or "COIL")
                 {
-                    await _master.WriteSingleCoilAsync(DeviceInfo.StationNo, startAddr, Convert.ToBoolean(value));
+                    await _master.WriteSingleCoilAsync(DeviceInfo.SlaveId, startAddr, Convert.ToBoolean(value));
                     return CommunicationResult<bool>.Ok(true);
                 }
 
@@ -160,7 +160,7 @@ namespace PlcMonitor.Core
                         _ => [Convert.ToUInt16(value)]
                     };
 
-                    await _master.WriteMultipleRegistersAsync(DeviceInfo.StationNo, startAddr, regs);
+                    await _master.WriteMultipleRegistersAsync(DeviceInfo.SlaveId, startAddr, regs);
                     return CommunicationResult<bool>.Ok(true);
                 }
 

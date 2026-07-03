@@ -37,19 +37,19 @@
             statusMasterTcp = new Label();
             statusSlaveServerSerial = new Label();
             statusMasterSerial = new Label();
-            txtConnectTcpStationNo = new TextBox();
-            txtConnectSerialStationNo = new TextBox();
+            txtConnectTcpSlaveId = new TextBox();
+            txtConnectSerialSlaveId = new TextBox();
             txtSlaveServerTcpPort = new TextBox();
             btnStopSlaveServerTcp = new Button();
             btnDisconnectTcp = new Button();
             btnStopSlaveServerSerial = new Button();
             btnDisconnectSerial = new Button();
             txtSlaveServerSerialPortName = new TextBox();
-            txtSlaveServerTcpStationNo = new TextBox();
+            txtSlaveServerTcpSlaveId = new TextBox();
             txtConnectTcpHost = new TextBox();
             txtConnectSerialPortName = new TextBox();
             txtConnectTcpPort = new TextBox();
-            txtSlaveServerSerialStationNo = new TextBox();
+            txtSlaveServerSerialSlaveId = new TextBox();
             comboBoxSlaveServerSerialMode = new ComboBox();
             comboBoxConnectSerialMode = new ComboBox();
             txtComLog = new TextBox();
@@ -57,8 +57,16 @@
             groupBox2 = new GroupBox();
             groupBox3 = new GroupBox();
             groupBox4 = new GroupBox();
+            btnConnectS7 = new Button();
+            btnDisconnectS7 = new Button();
+            txtConnectS7Host = new TextBox();
+            comboBoxConnectS7CpuType = new ComboBox();
+            txtConnectS7Slot = new TextBox();
+            txtConnectS7Rack = new TextBox();
+            statusMasterS7 = new Label();
             groupBox1.SuspendLayout();
             groupBox2.SuspendLayout();
+            groupBox4.SuspendLayout();
             SuspendLayout();
             // 
             // btnConnectTcp
@@ -133,23 +141,23 @@
             statusMasterSerial.TabIndex = 2;
             statusMasterSerial.Text = "statusMasterSerial";
             // 
-            // txtConnectTcpStationNo
+            // txtConnectTcpSlaveId
             // 
-            txtConnectTcpStationNo.Location = new Point(189, 28);
-            txtConnectTcpStationNo.Name = "txtConnectTcpStationNo";
-            txtConnectTcpStationNo.PlaceholderText = "station id";
-            txtConnectTcpStationNo.Size = new Size(29, 23);
-            txtConnectTcpStationNo.TabIndex = 3;
-            txtConnectTcpStationNo.Text = "1";
+            txtConnectTcpSlaveId.Location = new Point(189, 28);
+            txtConnectTcpSlaveId.Name = "txtConnectTcpSlaveId";
+            txtConnectTcpSlaveId.PlaceholderText = "station id";
+            txtConnectTcpSlaveId.Size = new Size(29, 23);
+            txtConnectTcpSlaveId.TabIndex = 3;
+            txtConnectTcpSlaveId.Text = "1";
             // 
-            // txtConnectSerialStationNo
+            // txtConnectSerialSlaveId
             // 
-            txtConnectSerialStationNo.Location = new Point(189, 128);
-            txtConnectSerialStationNo.Name = "txtConnectSerialStationNo";
-            txtConnectSerialStationNo.PlaceholderText = "station id";
-            txtConnectSerialStationNo.Size = new Size(29, 23);
-            txtConnectSerialStationNo.TabIndex = 3;
-            txtConnectSerialStationNo.Text = "2";
+            txtConnectSerialSlaveId.Location = new Point(189, 128);
+            txtConnectSerialSlaveId.Name = "txtConnectSerialSlaveId";
+            txtConnectSerialSlaveId.PlaceholderText = "station id";
+            txtConnectSerialSlaveId.Size = new Size(29, 23);
+            txtConnectSerialSlaveId.TabIndex = 3;
+            txtConnectSerialSlaveId.Text = "2";
             // 
             // txtSlaveServerTcpPort
             // 
@@ -205,14 +213,14 @@
             txtSlaveServerSerialPortName.TabIndex = 3;
             txtSlaveServerSerialPortName.Text = "COM3";
             // 
-            // txtSlaveServerTcpStationNo
+            // txtSlaveServerTcpSlaveId
             // 
-            txtSlaveServerTcpStationNo.Location = new Point(185, 38);
-            txtSlaveServerTcpStationNo.Name = "txtSlaveServerTcpStationNo";
-            txtSlaveServerTcpStationNo.PlaceholderText = "station id";
-            txtSlaveServerTcpStationNo.Size = new Size(29, 23);
-            txtSlaveServerTcpStationNo.TabIndex = 3;
-            txtSlaveServerTcpStationNo.Text = "1";
+            txtSlaveServerTcpSlaveId.Location = new Point(185, 38);
+            txtSlaveServerTcpSlaveId.Name = "txtSlaveServerTcpSlaveId";
+            txtSlaveServerTcpSlaveId.PlaceholderText = "station id";
+            txtSlaveServerTcpSlaveId.Size = new Size(29, 23);
+            txtSlaveServerTcpSlaveId.TabIndex = 3;
+            txtSlaveServerTcpSlaveId.Text = "1";
             // 
             // txtConnectTcpHost
             // 
@@ -241,14 +249,14 @@
             txtConnectTcpPort.TabIndex = 3;
             txtConnectTcpPort.Text = "502";
             // 
-            // txtSlaveServerSerialStationNo
+            // txtSlaveServerSerialSlaveId
             // 
-            txtSlaveServerSerialStationNo.Location = new Point(185, 139);
-            txtSlaveServerSerialStationNo.Name = "txtSlaveServerSerialStationNo";
-            txtSlaveServerSerialStationNo.PlaceholderText = "station id";
-            txtSlaveServerSerialStationNo.Size = new Size(29, 23);
-            txtSlaveServerSerialStationNo.TabIndex = 3;
-            txtSlaveServerSerialStationNo.Text = "1";
+            txtSlaveServerSerialSlaveId.Location = new Point(185, 139);
+            txtSlaveServerSerialSlaveId.Name = "txtSlaveServerSerialSlaveId";
+            txtSlaveServerSerialSlaveId.PlaceholderText = "station id";
+            txtSlaveServerSerialSlaveId.Size = new Size(29, 23);
+            txtSlaveServerSerialSlaveId.TabIndex = 3;
+            txtSlaveServerSerialSlaveId.Text = "1";
             // 
             // comboBoxSlaveServerSerialMode
             // 
@@ -286,9 +294,9 @@
             groupBox1.Controls.Add(btnDisconnectSerial);
             groupBox1.Controls.Add(txtConnectSerialPortName);
             groupBox1.Controls.Add(statusMasterTcp);
-            groupBox1.Controls.Add(txtConnectSerialStationNo);
+            groupBox1.Controls.Add(txtConnectSerialSlaveId);
             groupBox1.Controls.Add(statusMasterSerial);
-            groupBox1.Controls.Add(txtConnectTcpStationNo);
+            groupBox1.Controls.Add(txtConnectTcpSlaveId);
             groupBox1.Controls.Add(txtConnectTcpPort);
             groupBox1.Controls.Add(txtConnectTcpHost);
             groupBox1.Location = new Point(12, 12);
@@ -308,9 +316,9 @@
             groupBox2.Controls.Add(btnStopSlaveServerSerial);
             groupBox2.Controls.Add(txtSlaveServerTcpPort);
             groupBox2.Controls.Add(statusSlaveServerTcp);
-            groupBox2.Controls.Add(txtSlaveServerSerialStationNo);
+            groupBox2.Controls.Add(txtSlaveServerSerialSlaveId);
             groupBox2.Controls.Add(statusSlaveServerSerial);
-            groupBox2.Controls.Add(txtSlaveServerTcpStationNo);
+            groupBox2.Controls.Add(txtSlaveServerTcpSlaveId);
             groupBox2.Location = new Point(12, 249);
             groupBox2.Name = "groupBox2";
             groupBox2.Size = new Size(445, 226);
@@ -320,7 +328,7 @@
             // 
             // groupBox3
             // 
-            groupBox3.Location = new Point(12, 497);
+            groupBox3.Location = new Point(12, 685);
             groupBox3.Name = "groupBox3";
             groupBox3.Size = new Size(445, 149);
             groupBox3.TabIndex = 8;
@@ -329,12 +337,82 @@
             // 
             // groupBox4
             // 
-            groupBox4.Location = new Point(12, 671);
+            groupBox4.Controls.Add(btnConnectS7);
+            groupBox4.Controls.Add(btnDisconnectS7);
+            groupBox4.Controls.Add(txtConnectS7Host);
+            groupBox4.Controls.Add(comboBoxConnectS7CpuType);
+            groupBox4.Controls.Add(txtConnectS7Slot);
+            groupBox4.Controls.Add(txtConnectS7Rack);
+            groupBox4.Controls.Add(statusMasterS7);
+            groupBox4.Location = new Point(12, 499);
             groupBox4.Name = "groupBox4";
             groupBox4.Size = new Size(445, 149);
             groupBox4.TabIndex = 8;
             groupBox4.TabStop = false;
             groupBox4.Text = "Siemens S7";
+            // 
+            // btnConnectS7
+            // 
+            btnConnectS7.Location = new Point(15, 41);
+            btnConnectS7.Name = "btnConnectS7";
+            btnConnectS7.Size = new Size(161, 35);
+            btnConnectS7.TabIndex = 0;
+            btnConnectS7.Text = "连接S7";
+            btnConnectS7.UseVisualStyleBackColor = true;
+            // 
+            // btnDisconnectS7
+            // 
+            btnDisconnectS7.Location = new Point(15, 82);
+            btnDisconnectS7.Name = "btnDisconnectS7";
+            btnDisconnectS7.Size = new Size(161, 35);
+            btnDisconnectS7.TabIndex = 0;
+            btnDisconnectS7.Text = "断开S7";
+            btnDisconnectS7.UseVisualStyleBackColor = true;
+            // 
+            // txtConnectS7Host
+            // 
+            txtConnectS7Host.Location = new Point(189, 47);
+            txtConnectS7Host.Name = "txtConnectS7Host";
+            txtConnectS7Host.PlaceholderText = "host";
+            txtConnectS7Host.Size = new Size(80, 23);
+            txtConnectS7Host.TabIndex = 3;
+            txtConnectS7Host.Text = "127.0.0.1";
+            // 
+            // comboBoxConnectS7CpuType
+            // 
+            comboBoxConnectS7CpuType.FormattingEnabled = true;
+            comboBoxConnectS7CpuType.Location = new Point(345, 45);
+            comboBoxConnectS7CpuType.Name = "comboBoxConnectS7CpuType";
+            comboBoxConnectS7CpuType.Size = new Size(82, 25);
+            comboBoxConnectS7CpuType.TabIndex = 4;
+            comboBoxConnectS7CpuType.Text = "S71200";
+            // 
+            // txtConnectS7Slot
+            // 
+            txtConnectS7Slot.Location = new Point(310, 47);
+            txtConnectS7Slot.Name = "txtConnectS7Slot";
+            txtConnectS7Slot.PlaceholderText = "插槽：S7-300/400CPU=2；1200/1500=1；200SMART=1";
+            txtConnectS7Slot.Size = new Size(29, 23);
+            txtConnectS7Slot.TabIndex = 3;
+            txtConnectS7Slot.Text = "1";
+            // 
+            // txtConnectS7Rack
+            // 
+            txtConnectS7Rack.Location = new Point(275, 47);
+            txtConnectS7Rack.Name = "txtConnectS7Rack";
+            txtConnectS7Rack.PlaceholderText = "机架：S7-300/400=0；S7-1200/1500/200SMART=0";
+            txtConnectS7Rack.Size = new Size(29, 23);
+            txtConnectS7Rack.TabIndex = 3;
+            txtConnectS7Rack.Text = "1";
+            // 
+            // statusMasterS7
+            // 
+            statusMasterS7.AutoSize = true;
+            statusMasterS7.Location = new Point(189, 91);
+            statusMasterS7.Name = "statusMasterS7";
+            statusMasterS7.Size = new Size(104, 17);
+            statusMasterS7.TabIndex = 2;
+            statusMasterS7.Text = "statusMasterTcp";
             // 
             // MainForm
             // 
@@ -353,6 +431,8 @@
             groupBox1.PerformLayout();
             groupBox2.ResumeLayout(false);
             groupBox2.PerformLayout();
+            groupBox4.ResumeLayout(false);
+            groupBox4.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -367,19 +447,19 @@
         private Label statusMasterTcp;
         private Label statusSlaveServerSerial;
         private Label statusMasterSerial;
-        private TextBox txtConnectTcpStationNo;
-        private TextBox txtConnectSerialStationNo;
+        private TextBox txtConnectTcpSlaveId;
+        private TextBox txtConnectSerialSlaveId;
         private TextBox txtSlaveServerTcpPort;
         private Button btnStopSlaveServerTcp;
         private Button btnDisconnectTcp;
         private Button btnStopSlaveServerSerial;
         private Button btnDisconnectSerial;
         private TextBox txtSlaveServerSerialPortName;
-        private TextBox txtSlaveServerTcpStationNo;
+        private TextBox txtSlaveServerTcpSlaveId;
         private TextBox txtConnectTcpHost;
         private TextBox txtConnectSerialPortName;
         private TextBox txtConnectTcpPort;
-        private TextBox txtSlaveServerSerialStationNo;
+        private TextBox txtSlaveServerSerialSlaveId;
         private ComboBox comboBoxSlaveServerSerialMode;
         private ComboBox comboBoxConnectSerialMode;
         private TextBox txtComLog;
@@ -387,5 +467,12 @@
         private GroupBox groupBox2;
         private GroupBox groupBox3;
         private GroupBox groupBox4;
+        private Button btnConnectS7;
+        private Button btnDisconnectS7;
+        private TextBox txtConnectS7Host;
+        private TextBox txtConnectS7Slot;
+        private TextBox txtConnectS7Rack;
+        private Label statusMasterS7;
+        private ComboBox comboBoxConnectS7CpuType;
     }
 }

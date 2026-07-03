@@ -87,7 +87,7 @@ namespace PlcMonitor.Core
                             DataPointType.Double => 4,
                             _ => 1
                         };
-                        registers = await _master.ReadHoldingRegistersAsync(DeviceInfo.StationNo, startAddr, len);
+                        registers = await _master.ReadHoldingRegistersAsync(DeviceInfo.SlaveId, startAddr, len);
                         return CommunicationResult<object?>.Ok(ConvertRegisters(registers, dataType));
                     case "IR": // 输入寄存器
                         ushort lenIr = dataType switch
@@ -96,14 +96,14 @@ namespace PlcMonitor.Core
                             DataPointType.Int32 or DataPointType.Float => 2,
                             _ => 1
                         };
-                        registers = await _master.ReadInputRegistersAsync(DeviceInfo.StationNo, startAddr, lenIr);
+                        registers = await _master.ReadInputRegistersAsync(DeviceInfo.SlaveId, startAddr, lenIr);
                         return CommunicationResult<object?>.Ok(ConvertRegisters(registers, dataType));
                     case "C": // 线圈
                     case "COIL": // 线圈
-                        bool[] coils = await _master.ReadCoilsAsync(DeviceInfo.StationNo, startAddr, 1);
+                        bool[] coils = await _master.ReadCoilsAsync(DeviceInfo.SlaveId, startAddr, 1);
                         return CommunicationResult<object?>.Ok(coils[0]);
                     case "DI": // 离散输入
-                        bool[] dis = await _master.ReadInputsAsync(DeviceInfo.StationNo, startAddr, 1);
+                        bool[] dis = await _master.ReadInputsAsync(DeviceInfo.SlaveId, startAddr, 1);
                         return CommunicationResult<object?>.Ok(dis[0]);
                     default:
                         return CommunicationResult<object?>.Fail("不支持的寄存器区域");
@@ -139,7 +139,7 @@ namespace PlcMonitor.Core
 
                 if (area.Equals("C", StringComparison.OrdinalIgnoreCase) || area.Equals("COIL", StringComparison.OrdinalIgnoreCase))
                 {
-                    await _master.WriteSingleCoilAsync(DeviceInfo.StationNo, startAddr, Convert.ToBoolean(value));
+                    await _master.WriteSingleCoilAsync(DeviceInfo.SlaveId, startAddr, Convert.ToBoolean(value));
                     return CommunicationResult<bool>.Ok(true);
                 }
 
@@ -151,7 +151,7 @@ namespace PlcMonitor.Core
                         DataPointType.Float => DataConvertHelper.FloatToRegisters(Convert.ToSingle(value)),
                         _ => [Convert.ToUInt16(value)]
                     };
-                    await _master.WriteMultipleRegistersAsync(DeviceInfo.StationNo, startAddr, regs);
+                    await _master.WriteMultipleRegistersAsync(DeviceInfo.SlaveId, startAddr, regs);
                     return CommunicationResult<bool>.Ok(true);
                 }
 

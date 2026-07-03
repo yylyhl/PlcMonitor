@@ -25,7 +25,7 @@ namespace PlcMonitor.Core
             try
             {
                 CpuType cpu = CpuType.S71500; // 默认S7-1500，可根据设备配置修改
-                _plc = new Plc(cpu, DeviceInfo.IpAddress, (short)DeviceInfo.StationNo, (short)DeviceInfo.Slot);
+                _plc = new Plc(cpu, DeviceInfo.IpAddress, (short)DeviceInfo.Rack, (short)DeviceInfo.Slot);
                 await _plc.OpenAsync();
                 IsConnected = _plc.IsConnected;
                 OnConnectionStateChanged?.Invoke();

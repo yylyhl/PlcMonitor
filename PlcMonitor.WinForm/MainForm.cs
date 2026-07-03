@@ -19,6 +19,7 @@ namespace PlcMonitor.WinForm
 
             InitControlsModbusMasterTcp();
             InitControlsModbusMasterSerialPort();
+            InitControlsS7Master();
             InitControlsModbusSlaveTcp();
             InitControlsModbusSlaveSerialPort();
 
@@ -62,11 +63,6 @@ namespace PlcMonitor.WinForm
             btnDisconnectTcp.Click += btnDisconnectTcp_Click;
             //Controls.Add(btnDisconnectTcp);
         }
-        private void statusSlaveServerTcpTxt(string message)
-        {
-            statusSlaveServerTcp.Text = $"[statusMasterTcp]---{message}";
-            WriteLog($"[statusMasterTcp]---{message}");
-        }
         ICommunicationClient _modbusTcpClient;
         private async void btnDisconnectTcp_Click(object sender, EventArgs e)
         {
@@ -74,7 +70,7 @@ namespace PlcMonitor.WinForm
             await _modbusTcpClient.DisconnectAsync();
             await Task.Delay(1500);
             btnConnectTcp.Enabled = true;
-            txtConnectTcpStationNo.Enabled = true;
+            txtConnectTcpSlaveId.Enabled = true;
             txtConnectTcpHost.Enabled = true;
             txtConnectTcpPort.Enabled = true;
             statusMasterTcp.Text = $"状态：已断开连接";
@@ -91,18 +87,18 @@ namespace PlcMonitor.WinForm
             txtConnectTcpHost.Enabled = false;
             _ = int.TryParse(txtConnectTcpPort.Text, out var port);
             txtConnectTcpPort.Enabled = false;
-            _ = byte.TryParse(txtConnectTcpStationNo.Text, out var slaveId);
-            txtConnectTcpStationNo.Enabled = false;
+            _ = byte.TryParse(txtConnectTcpSlaveId.Text, out var slaveId);
+            txtConnectTcpSlaveId.Enabled = false;
             btnConnectTcp.Enabled = false;
             statusMasterTcp.Text = "状态：连接中...";
             WriteLog($"[statusMasterTcp]状态：连接中...");
-            var device = new Device { DeviceType = DeviceType.ModbusTcp, IpAddress = slaveHost, StationNo = slaveId, Port = port };
+            var device = new Device { DeviceType = DeviceType.ModbusTcp, IpAddress = slaveHost, SlaveId = slaveId, Port = port };
             _modbusTcpClient = CommunicationClientFactory.CreateClient(device);
             var ress = await _modbusTcpClient.ConnectAsync();
             if (!ress.Success)
             {
                 btnConnectTcp.Enabled = true;
-                txtConnectTcpStationNo.Enabled = true;
+                txtConnectTcpSlaveId.Enabled = true;
                 txtConnectTcpHost.Enabled = true;
                 txtConnectTcpPort.Enabled = true;
                 statusMasterTcp.Text = $"状态：[{ress.ErrorMessage}]";
@@ -152,7 +148,7 @@ namespace PlcMonitor.WinForm
             await _modbusSerialClient.DisconnectAsync();
             await Task.Delay(1500);
             btnConnectSerial.Enabled = true;
-            txtConnectSerialStationNo.Enabled = true;
+            txtConnectSerialSlaveId.Enabled = true;
             txtConnectSerialPortName.Enabled = true;
             comboBoxConnectSerialMode.Enabled = true;
             statusMasterSerial.Text = $"状态：已断开连接";
@@ -167,8 +163,8 @@ namespace PlcMonitor.WinForm
             }
             var portName = txtConnectSerialPortName.Text ?? "COM4";
             txtConnectSerialPortName.Enabled = false;
-            _ = byte.TryParse(txtConnectSerialStationNo.Text, out var slaveId);
-            txtConnectSerialStationNo.Enabled = false;
+            _ = byte.TryParse(txtConnectSerialSlaveId.Text, out var slaveId);
+            txtConnectSerialSlaveId.Enabled = false;
             btnConnectSerial.Enabled = false;
             var mode = comboBoxConnectSerialMode.SelectedItem;
             comboBoxConnectSerialMode.Enabled = false;
@@ -178,7 +174,7 @@ namespace PlcMonitor.WinForm
             {
                 DeviceType = DeviceType.ModbusSerialPort,
                 PortName = portName,
-                StationNo = slaveId,
+                SlaveId = slaveId,
                 SerialMode = mode?.ToString() == SerialMode.ASCII.ToString() ? SerialMode.ASCII : SerialMode.RTU
             };
             _modbusSerialClient = CommunicationClientFactory.CreateClient(device);
@@ -194,7 +190,7 @@ namespace PlcMonitor.WinForm
             if (!ress.Success)
             {
                 btnConnectSerial.Enabled = true;
-                txtConnectSerialStationNo.Enabled = true;
+                txtConnectSerialSlaveId.Enabled = true;
                 txtConnectSerialPortName.Enabled = true;
                 statusMasterSerial.Text = $"状态：[{ress.ErrorMessage}]";
                 WriteLog($"[statusMasterSerial]状态：{ress.ErrorMessage}");
@@ -215,6 +211,87 @@ namespace PlcMonitor.WinForm
                     {
                         statusMasterSerial.Text = $"data：[write={(writeData.Success ? randData : writeData.ErrorMessage)}] [read={(readData.Success ? readData.Data : readData.ErrorMessage)}]";
                         WriteLog($"[statusMasterSerial]data：[write={(writeData.Success ? randData : writeData.ErrorMessage)}] [read={(readData.Success ? readData.Data : readData.ErrorMessage)}]");
+                    });
+                    Thread.Sleep(1000);
+                }
+            });
+        }
+        #endregion
+
+        #region Modbus Master Tcp
+        private void InitControlsS7Master()
+        {
+            btnConnectS7.Click += btnConnectS7_Click;
+            btnDisconnectS7.Click += btnDisconnectS7_Click;
+
+            comboBoxConnectS7CpuType.Items.Add(S7.Net.CpuType.S7200);
+            comboBoxConnectS7CpuType.Items.Add(S7.Net.CpuType.Logo0BA8);
+            comboBoxConnectS7CpuType.Items.Add(S7.Net.CpuType.S7200Smart);
+            comboBoxConnectS7CpuType.Items.Add(S7.Net.CpuType.S7300);
+            comboBoxConnectS7CpuType.Items.Add(S7.Net.CpuType.S7400);
+            comboBoxConnectS7CpuType.Items.Add(S7.Net.CpuType.S71200);
+            comboBoxConnectS7CpuType.Items.Add(S7.Net.CpuType.S71500);
+            comboBoxConnectS7CpuType.SelectedIndex = 6;
+        }
+        ICommunicationClient _s7Client;
+        private async void btnDisconnectS7_Click(object sender, EventArgs e)
+        {
+            if (!_s7Client.IsConnected) return;
+            await _s7Client.DisconnectAsync();
+            await Task.Delay(1500);
+            btnConnectS7.Enabled = true;
+            txtConnectS7Rack.Enabled = true;
+            txtConnectS7Host.Enabled = true;
+            txtConnectS7Slot.Enabled = true;
+            statusMasterS7.Text = $"状态：已断开连接";
+            WriteLog($"[statusMasterS7]状态：已断开连接");
+        }
+        private async void btnConnectS7_Click(object sender, EventArgs e)
+        {
+            if (_s7Client != null && _s7Client.IsConnected)
+            {
+                MessageBox.Show("已连接", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+            var slaveHost = txtConnectS7Host.Text ?? "127.0.0.1";
+            txtConnectS7Host.Enabled = false;
+            _ = int.TryParse(txtConnectS7Slot.Text, out var slot);
+            txtConnectS7Slot.Enabled = false;
+            _ = byte.TryParse(txtConnectS7Rack.Text, out var rack);
+            txtConnectS7Rack.Enabled = false;
+            btnConnectS7.Enabled = false;
+            statusMasterS7.Text = "状态：连接中...";
+            WriteLog($"[statusMasterS7]状态：连接中...");
+            var device = new Device { DeviceType = DeviceType.SiemensS7, IpAddress = slaveHost, Rack = rack, Slot = slot };
+            _s7Client = CommunicationClientFactory.CreateClient(device);
+            var ress = await _s7Client.ConnectAsync();
+            if (!ress.Success)
+            {
+                btnConnectS7.Enabled = true;
+                txtConnectS7Rack.Enabled = true;
+                txtConnectS7Host.Enabled = true;
+                txtConnectS7Slot.Enabled = true;
+                statusMasterS7.Text = $"状态：[{ress.ErrorMessage}]";
+                WriteLog($"[statusMasterS7]状态：[{ress.ErrorMessage}]");
+                return;
+            }
+            statusMasterS7.Text = "状态：已连接";
+            WriteLog($"[statusMasterS7]状态：已连接");
+            await Task.Delay(500);
+            //_timer.Start();
+            _ = Task.Run(async () =>
+            {
+                while (true)
+                {
+                    if (btnConnectS7.Enabled) break;
+                    var randData = _random.Next(10, 100);
+                    var writeData = await _s7Client.WriteAsync(ModbusFunction.HR + "1", DataPointType.Float, randData);
+                    var readData = await _s7Client.ReadAsync(ModbusFunction.HR + "1", DataPointType.Float);
+                    this.Invoke(() =>
+                    {
+                        statusMasterS7.Text = $"data：[write={(writeData.Success ? randData : writeData.ErrorMessage)}] [read={(readData.Success ? readData.Data : readData.ErrorMessage)}]";
+                        WriteLog($"[statusMasterS7]data：[write={(writeData.Success ? randData : writeData.ErrorMessage)}] [read={(readData.Success ? readData.Data : readData.ErrorMessage)}]");
+                        //Timer_Tick(default, default);
                     });
                     Thread.Sleep(1000);
                 }
@@ -277,8 +354,8 @@ namespace PlcMonitor.WinForm
                 MessageBox.Show("已启动", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
-            _ = byte.TryParse(txtSlaveServerTcpStationNo.Text, out var slaveId);
-            txtSlaveServerTcpStationNo.Enabled = false;
+            _ = byte.TryParse(txtSlaveServerTcpSlaveId.Text, out var slaveId);
+            txtSlaveServerTcpSlaveId.Enabled = false;
             _ = int.TryParse(txtSlaveServerTcpPort.Text, out var port);
             txtSlaveServerTcpPort.Enabled = false;
             btnStartSlaveServerTcp.Enabled = false;
@@ -319,8 +396,8 @@ namespace PlcMonitor.WinForm
                 return;
             }
 
-            _ = byte.TryParse(txtSlaveServerTcpStationNo.Text, out var slaveId);
-            txtSlaveServerTcpStationNo.Enabled = false;
+            _ = byte.TryParse(txtSlaveServerTcpSlaveId.Text, out var slaveId);
+            txtSlaveServerTcpSlaveId.Enabled = false;
             _ = int.TryParse(txtSlaveServerTcpPort.Text, out var port);
             txtSlaveServerTcpPort.Enabled = false;
             btnStartSlaveServerTcp.Enabled = false;
@@ -391,7 +468,7 @@ namespace PlcMonitor.WinForm
             await _modbusSerialSlave?.StopAsync();
             await Task.Delay(1500);
             comboBoxSlaveServerSerialMode.Enabled = true;
-            txtSlaveServerSerialStationNo.Enabled = true;
+            txtSlaveServerSerialSlaveId.Enabled = true;
             txtSlaveServerSerialPortName.Enabled = true;
             btnStartSlaveServerSerial.Enabled = true;
             statusSlaveServerSerial.Text = "状态：已停止";
@@ -415,8 +492,8 @@ namespace PlcMonitor.WinForm
             btnStartSlaveServerSerial.Enabled = false;
             statusSlaveServerSerial.Text = "状态：启动中...";
             WriteLog($"[statusSlaveServerSerial]状态：启动中...");
-            _ = byte.TryParse(txtSlaveServerSerialStationNo.Text, out var slaveId);
-            txtSlaveServerSerialStationNo.Enabled = false;
+            _ = byte.TryParse(txtSlaveServerSerialSlaveId.Text, out var slaveId);
+            txtSlaveServerSerialSlaveId.Enabled = false;
             var mode = comboBoxSlaveServerSerialMode.SelectedItem;
             comboBoxSlaveServerSerialMode.Enabled = false;
             var portName = txtSlaveServerSerialPortName.Text;
@@ -425,7 +502,7 @@ namespace PlcMonitor.WinForm
             {
                 DeviceType = DeviceType.ModbusSerialPort,
                 PortName = portName,
-                StationNo = slaveId,
+                SlaveId = slaveId,
                 SerialMode = mode?.ToString() == SerialMode.ASCII.ToString() ? SerialMode.ASCII : SerialMode.RTU
             };
             //_modbusSerialSlave = new ModbusSerialSlave(device);
@@ -488,7 +565,7 @@ namespace PlcMonitor.WinForm
             catch (Exception ex)
             {
                 comboBoxSlaveServerSerialMode.Enabled = true;
-                txtSlaveServerSerialStationNo.Enabled = true;
+                txtSlaveServerSerialSlaveId.Enabled = true;
                 txtSlaveServerSerialPortName.Enabled = true;
                 btnStartSlaveServerSerial.Enabled = true;
                 statusSlaveServerSerial.Text = $"程序已退出，运行错误: {ex.Message}";
