@@ -11,7 +11,7 @@ namespace PlcMonitor.Core
         private Plc? _plc;
         public bool IsConnected { get; private set; }
 
-        public event Action<string, string>? OnError;
+        public event Action<string>? OnLog;
         public event Action? OnConnectionStateChanged;
 
         public Device DeviceInfo { get; }
@@ -33,7 +33,6 @@ namespace PlcMonitor.Core
             }
             catch (Exception ex)
             {
-                OnError?.Invoke(DeviceInfo.Name, $"连接失败: {ex.Message}");
                 return CommunicationResult<bool>.Fail($"S7连接失败：{ex.Message}");
             }
         }
@@ -68,7 +67,6 @@ namespace PlcMonitor.Core
             }
             catch (Exception ex)
             {
-                OnError?.Invoke(DeviceInfo.Name, $"读取失败: [{address}]{ex.Message}");
                 return CommunicationResult<object?>.Fail($"读取失败：[{address}]{ex.Message}");
             }
         }
@@ -86,7 +84,6 @@ namespace PlcMonitor.Core
             }
             catch (Exception ex)
             {
-                OnError?.Invoke(DeviceInfo.Name, $"写入失败: [{address}]{ex.Message}");
                 return CommunicationResult<bool>.Fail($"写入失败: [{address}]{ex.Message}");
             }
         }

@@ -15,7 +15,7 @@ namespace PlcMonitor.Core
 
         public bool IsConnected { get; private set; }
 
-        public event Action<string, string>? OnError;
+        public event Action<string>? OnLog;
         public event Action? OnConnectionStateChanged;
 
         public Device DeviceInfo { get; }
@@ -40,7 +40,6 @@ namespace PlcMonitor.Core
             }
             catch (Exception ex)
             {
-                OnError?.Invoke(DeviceInfo.Name, $"err: {ex.Message}");
                 return CommunicationResult<bool>.Fail($"err：{ex.Message}");
             }
         }
@@ -60,8 +59,7 @@ namespace PlcMonitor.Core
 
         public async Task<CommunicationResult<object?>> ReadAsync(string address, DataPointType dataType)
         {
-            if (!IsConnected || _master == null)
-                return CommunicationResult<object?>.Fail("设备未连接");
+            if (!IsConnected || _master == null) return CommunicationResult<object?>.Fail("设备未连接");
 
             try
             {
@@ -113,7 +111,6 @@ namespace PlcMonitor.Core
             }
             catch (Exception ex)
             {
-                OnError?.Invoke(DeviceInfo.Name, $"读取失败: [{address}]{ex.Message}");
                 return CommunicationResult<object?>.Fail($"读取失败：[{address}]{ex.Message}");
             }
         }
@@ -162,7 +159,6 @@ namespace PlcMonitor.Core
             }
             catch (Exception ex)
             {
-                OnError?.Invoke(DeviceInfo.Name, $"写入失败: [{address}]{ex.Message}");
                 return CommunicationResult<bool>.Fail($"写入失败: [{address}]{ex.Message}");
             }
         }

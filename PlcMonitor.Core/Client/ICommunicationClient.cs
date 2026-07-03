@@ -21,7 +21,7 @@
         /// </summary>
         Task<CommunicationResult<bool>> WriteAsync(string address, DataPointType dataType, object value);
 
-        event Action<string, string>? OnError;
+        event Action<string>? OnLog;
         event Action? OnConnectionStateChanged;
     }
 }

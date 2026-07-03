@@ -92,6 +92,14 @@ namespace PlcMonitor.Core
                     ReadTimeout = 3000,
                     WriteTimeout = 3000
                 };
+                _serialPort.DataReceived += (sender, args) => 
+                {
+                    OnLog?.Invoke($"[ModbusSerialSlave]DataReceived-{sender} [{args.EventType}] {args}");
+                };
+                _serialPort.ErrorReceived += (sender, args) => 
+                {
+                    OnLog?.Invoke($"[ModbusSerialSlave]ErrorReceived-{sender} [{args.EventType}] {args}");
+                };
                 _serialPort.Open();
 
                 // 注册取消回调：停止监听以中断ListenAsync

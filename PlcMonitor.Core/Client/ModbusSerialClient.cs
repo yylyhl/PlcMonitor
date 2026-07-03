@@ -16,7 +16,7 @@ namespace PlcMonitor.Core
 
         public bool IsConnected { get; private set; }
 
-        public event Action<string, string>? OnError;
+        public event Action<string>? OnLog;
         public event Action? OnConnectionStateChanged;
 
         public Device DeviceInfo { get; }
@@ -40,7 +40,14 @@ namespace PlcMonitor.Core
                     ReadTimeout = 3000,
                     WriteTimeout = 3000
                 };
-
+                _serialPort.DataReceived += (sender, args) =>
+                {
+                    OnLog?.Invoke($"[ModbusSerialClient]DataReceived-{sender} [{args.EventType}]");
+                };
+                _serialPort.ErrorReceived += (sender, args) =>
+                {
+                    OnLog?.Invoke($"[ModbusSerialClient]ErrorReceived-{sender} [{args.EventType}]");
+                };
                 _serialPort.Open();
 
                 var factory = new ModbusFactory();
@@ -59,7 +66,6 @@ namespace PlcMonitor.Core
             }
             catch (Exception ex)
             {
-                OnError?.Invoke(DeviceInfo.Name, $"err: {ex.Message}");
                 return CommunicationResult<bool>.Fail($"err：{ex.Message}");
             }
         }
@@ -123,7 +129,6 @@ namespace PlcMonitor.Core
             }
             catch (Exception ex)
             {
-                OnError?.Invoke(DeviceInfo.Name, $"读取失败: [{address}]{ex.Message}");
                 return CommunicationResult<object?>.Fail($"读取失败：[{address}]{ex.Message}");
             }
         }
@@ -163,7 +168,6 @@ namespace PlcMonitor.Core
             }
             catch (Exception ex)
             {
-                OnError?.Invoke(DeviceInfo.Name, $"写入失败: [{address}]{ex.Message}");
                 return CommunicationResult<bool>.Fail($"写入失败：[{address}]{ex.Message}");
             }
         }

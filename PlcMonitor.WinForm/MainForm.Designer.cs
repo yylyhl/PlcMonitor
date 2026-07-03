@@ -293,7 +293,7 @@
             groupBox1.Controls.Add(txtConnectTcpHost);
             groupBox1.Location = new Point(12, 12);
             groupBox1.Name = "groupBox1";
-            groupBox1.Size = new Size(445, 221);
+            groupBox1.Size = new Size(445, 217);
             groupBox1.TabIndex = 6;
             groupBox1.TabStop = false;
             groupBox1.Text = "modbus master client";

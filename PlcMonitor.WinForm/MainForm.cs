@@ -58,9 +58,9 @@ namespace PlcMonitor.WinForm
         private void InitControlsModbusMasterTcp()
         {
             btnConnectTcp.Click += btnConnectTcp_Click;
-            Controls.Add(btnConnectSerial);
+            //Controls.Add(btnConnectTcp);
             btnDisconnectTcp.Click += btnDisconnectTcp_Click;
-            Controls.Add(btnDisconnectTcp);
+            //Controls.Add(btnDisconnectTcp);
         }
         private void statusSlaveServerTcpTxt(string message)
         {
@@ -82,7 +82,7 @@ namespace PlcMonitor.WinForm
         }
         private async void btnConnectTcp_Click(object sender, EventArgs e)
         {
-            if (_modbusTcpClient.IsConnected)
+            if (_modbusTcpClient != null && _modbusTcpClient.IsConnected)
             {
                 MessageBox.Show("已连接", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
@@ -137,13 +137,13 @@ namespace PlcMonitor.WinForm
         private void InitControlsModbusMasterSerialPort()
         {
             btnConnectSerial.Click += btnConnectSerial_Click;
-            Controls.Add(btnConnectSerial);
+            //Controls.Add(btnConnectSerial);
             btnDisconnectSerial.Click += btnDisconnectSerial_Click;
-            Controls.Add(btnDisconnectSerial);
+            //Controls.Add(btnDisconnectSerial);
             comboBoxConnectSerialMode.Items.Add(SerialMode.RTU);
             comboBoxConnectSerialMode.Items.Add(SerialMode.ASCII);
             comboBoxConnectSerialMode.SelectedIndex = 0;
-            Controls.Add(comboBoxConnectSerialMode);
+            //Controls.Add(comboBoxConnectSerialMode);
         }
         ICommunicationClient _modbusSerialClient;
         private async void btnDisconnectSerial_Click(object sender, EventArgs e)
@@ -160,7 +160,7 @@ namespace PlcMonitor.WinForm
         }
         private async void btnConnectSerial_Click(object sender, EventArgs e)
         {
-            if (_modbusSerialClient.IsConnected)
+            if (_modbusSerialClient != null && _modbusSerialClient.IsConnected)
             {
                 MessageBox.Show("已连接", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
@@ -182,6 +182,14 @@ namespace PlcMonitor.WinForm
                 SerialMode = mode?.ToString() == SerialMode.ASCII.ToString() ? SerialMode.ASCII : SerialMode.RTU
             };
             _modbusSerialClient = CommunicationClientFactory.CreateClient(device);
+            _modbusSerialClient.OnLog += (message) =>
+            {
+                this.Invoke(() =>
+                {
+                    statusMasterSerial.Text = $"OnLog：[{message}]";
+                });
+                WriteLog($"[statusMasterSerial]OnLog：{message}");
+            };
             var ress = await _modbusSerialClient.ConnectAsync();
             if (!ress.Success)
             {
@@ -219,9 +227,9 @@ namespace PlcMonitor.WinForm
         private void InitControlsModbusSlaveTcp()
         {
             btnStartSlaveServerTcp.Click += btnStartSlaveServerTcp_Click;
-            Controls.Add(btnStartSlaveServerTcp);
+            //Controls.Add(btnStartSlaveServerTcp);
             btnStopSlaveServerTcp.Click += btnStopSlaveServerTcp_Click;
-            Controls.Add(btnStopSlaveServerTcp);
+            //Controls.Add(btnStopSlaveServerTcp);
         }
         ModbusTcpSlave _modbusTcpSlave;
         private TcpListener? _tcpListener;
@@ -264,7 +272,7 @@ namespace PlcMonitor.WinForm
         }
         private async void btnStartSlaveServerTcp_Click(object sender, EventArgs e)
         {
-            if (_modbusTcpSlave.IsStarted)
+            if (_modbusTcpSlave != null && _modbusTcpSlave.IsStarted)
             {
                 MessageBox.Show("已启动", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
@@ -399,7 +407,7 @@ namespace PlcMonitor.WinForm
         }
         private async void btnStartSlaveServerSerial_Click(object sender, EventArgs e)
         {
-            if (_modbusSerialSlave.IsStarted)
+            if (_modbusSerialSlave != null && _modbusSerialSlave.IsStarted)
             {
                 MessageBox.Show("已启动", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
