@@ -127,6 +127,11 @@ namespace PlcMonitor.Core
                         return CommunicationResult<object?>.Ok(CommunicationResult<object?>.Fail("不支持的寄存器区域"));
                 }
             }
+            catch (InvalidModbusRequestException ex)
+            {
+                await DisconnectAsync();
+                return CommunicationResult<object?>.Fail($"读取失败2：[{address}]{ex.Message}");
+            }
             catch (Exception ex)
             {
                 return CommunicationResult<object?>.Fail($"读取失败：[{address}]{ex.Message}");
@@ -165,6 +170,11 @@ namespace PlcMonitor.Core
                 }
 
                 return CommunicationResult<bool>.Fail("该区域不支持写入");
+            }
+            catch (InvalidModbusRequestException ex)
+            {
+                await DisconnectAsync();
+                return CommunicationResult<bool>.Fail($"写入失败2：[{address}]{ex.Message}");
             }
             catch (Exception ex)
             {

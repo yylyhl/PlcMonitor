@@ -24,8 +24,9 @@ namespace PlcMonitor.Core
         {
             try
             {
-                CpuType cpu = CpuType.S71500; // 默认S7-1500，可根据设备配置修改
-                _plc = new Plc(cpu, DeviceInfo.IpAddress, (short)DeviceInfo.Rack, (short)DeviceInfo.Slot);
+                //CpuType cpu = CpuType.S71500; // 默认S7-1500，可根据设备配置修改
+                CpuType cpu = string.IsNullOrWhiteSpace(DeviceInfo.CpuType) ? CpuType.S71500 : (CpuType)Enum.Parse(typeof(CpuType), DeviceInfo.CpuType, ignoreCase: true);
+                _plc = new Plc(cpu, DeviceInfo.IpAddress, DeviceInfo.Port, (short)DeviceInfo.Rack, (short)DeviceInfo.Slot);
                 await _plc.OpenAsync();
                 IsConnected = _plc.IsConnected;
                 OnConnectionStateChanged?.Invoke();
@@ -49,24 +50,29 @@ namespace PlcMonitor.Core
         {
             if (!IsConnected || _plc == null)
                 return CommunicationResult<object?>.Fail("设备未连接");
-
             try
             {
-                object result = await _plc.ReadAsync(address);
-                // 类型统一转换
-                object? finalValue = dataType switch
+                string[] arr = (address.ToUpper()).Split('.');//如：db2.dbx0.1，db2.dbd4
+                string valuetype = arr[1].Substring(0, 3);//取数组中的第二个元素的前三位，用以确认读取的PLC数据类型
+                if (valuetype != "DBX" & valuetype != "DBW" & valuetype != "DBD")
                 {
-                    DataPointType.Bool => Convert.ToBoolean(result),
-                    DataPointType.Int16 => Convert.ToInt16(result),
-                    DataPointType.UInt16 => Convert.ToUInt16(result),
-                    DataPointType.Int32 => Convert.ToInt32(result),
-                    DataPointType.Float => Convert.ToSingle(result),
-                    _ => result
-                };
-                return CommunicationResult<object?>.Ok(finalValue);
+                    return CommunicationResult<object?>.Fail("请检查地址是否输入错误");//数据类型：DBX(位，bool） DBB(字节,byte） DBW(字/short,word） DBD(双字/double,dword）
+                }
+                object result = await _plc.ReadAsync(address.ToUpper());
+                //object? finalValue = dataType switch
+                //{
+                //    DataPointType.Bool => Convert.ToBoolean(result),
+                //    DataPointType.Int16 => Convert.ToInt16(result),
+                //    DataPointType.UInt16 => Convert.ToUInt16(result),
+                //    DataPointType.Int32 => Convert.ToInt32(result),
+                //    DataPointType.Float => Convert.ToSingle(result),
+                //    _ => result
+                //};
+                return CommunicationResult<object?>.Ok(result);
             }
             catch (Exception ex)
             {
+                if (!_plc.IsConnected) { await DisconnectAsync(); }
                 return CommunicationResult<object?>.Fail($"读取失败：[{address}]{ex.Message}");
             }
         }
@@ -78,12 +84,18 @@ namespace PlcMonitor.Core
 
             try
             {
-                //_plc.Write(address, value);
-                await _plc.WriteAsync(address, value);
+                string[] arr = (address.ToUpper()).Split('.');//如：db2.dbx0.1，db2.dbd4
+                string valuetype = arr[1].Substring(0, 3);//取数组中的第二个元素的前三位，用以确认读取的PLC数据类型
+                if (valuetype != "DBX" & valuetype != "DBW" & valuetype != "DBD")
+                {
+                    return CommunicationResult<bool>.Fail("请检查地址是否输入错误");//数据类型：DBX(位，bool） DBB(字节,byte） DBW(字/short,word） DBD(双字/double,dword）
+                }
+                await _plc.WriteAsync(address.ToUpper(), value);
                 return CommunicationResult<bool>.Ok(true);
             }
             catch (Exception ex)
             {
+                if (!_plc.IsConnected) { await DisconnectAsync(); }
                 return CommunicationResult<bool>.Fail($"写入失败: [{address}]{ex.Message}");
             }
         }
@@ -91,7 +103,6 @@ namespace PlcMonitor.Core
         public void Dispose()
         {
             _plc?.Close();
-            //_plc?.Dispose();
             IsConnected = false;
             GC.SuppressFinalize(this);
         }

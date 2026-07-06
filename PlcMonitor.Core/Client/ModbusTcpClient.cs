@@ -1,4 +1,5 @@
 ﻿using NModbus;
+using S7.Net;
 using System.Net.Sockets;
 
 namespace PlcMonitor.Core
@@ -111,6 +112,7 @@ namespace PlcMonitor.Core
             }
             catch (Exception ex)
             {
+                if (!_tcpClient.Connected) { await DisconnectAsync(); }
                 return CommunicationResult<object?>.Fail($"读取失败：[{address}]{ex.Message}");
             }
         }
@@ -159,6 +161,7 @@ namespace PlcMonitor.Core
             }
             catch (Exception ex)
             {
+                if (!_tcpClient.Connected) { await DisconnectAsync(); }
                 return CommunicationResult<bool>.Fail($"写入失败: [{address}]{ex.Message}");
             }
         }

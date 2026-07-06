@@ -64,6 +64,7 @@
             txtConnectS7Slot = new TextBox();
             txtConnectS7Rack = new TextBox();
             statusMasterS7 = new Label();
+            txtConnectS7Port = new TextBox();
             groupBox1.SuspendLayout();
             groupBox2.SuspendLayout();
             groupBox4.SuspendLayout();
@@ -164,7 +165,7 @@
             txtSlaveServerTcpPort.Location = new Point(233, 38);
             txtSlaveServerTcpPort.Name = "txtSlaveServerTcpPort";
             txtSlaveServerTcpPort.PlaceholderText = "port";
-            txtSlaveServerTcpPort.Size = new Size(57, 23);
+            txtSlaveServerTcpPort.Size = new Size(43, 23);
             txtSlaveServerTcpPort.TabIndex = 3;
             txtSlaveServerTcpPort.Text = "502";
             // 
@@ -209,7 +210,7 @@
             txtSlaveServerSerialPortName.Location = new Point(233, 139);
             txtSlaveServerSerialPortName.Name = "txtSlaveServerSerialPortName";
             txtSlaveServerSerialPortName.PlaceholderText = "portName";
-            txtSlaveServerSerialPortName.Size = new Size(56, 23);
+            txtSlaveServerSerialPortName.Size = new Size(60, 23);
             txtSlaveServerSerialPortName.TabIndex = 3;
             txtSlaveServerSerialPortName.Text = "COM3";
             // 
@@ -245,7 +246,7 @@
             txtConnectTcpPort.Location = new Point(310, 28);
             txtConnectTcpPort.Name = "txtConnectTcpPort";
             txtConnectTcpPort.PlaceholderText = "port";
-            txtConnectTcpPort.Size = new Size(57, 23);
+            txtConnectTcpPort.Size = new Size(43, 23);
             txtConnectTcpPort.TabIndex = 3;
             txtConnectTcpPort.Text = "502";
             // 
@@ -344,6 +345,7 @@
             groupBox4.Controls.Add(txtConnectS7Slot);
             groupBox4.Controls.Add(txtConnectS7Rack);
             groupBox4.Controls.Add(statusMasterS7);
+            groupBox4.Controls.Add(txtConnectS7Port);
             groupBox4.Location = new Point(12, 499);
             groupBox4.Name = "groupBox4";
             groupBox4.Size = new Size(445, 149);
@@ -414,6 +416,15 @@
             statusMasterS7.TabIndex = 2;
             statusMasterS7.Text = "statusMasterTcp";
             // 
+            // txtConnectS7Port
+            // 
+            txtConnectS7Port.Location = new Point(189, 22);
+            txtConnectS7Port.Name = "txtConnectS7Port";
+            txtConnectS7Port.PlaceholderText = "port";
+            txtConnectS7Port.Size = new Size(43, 23);
+            txtConnectS7Port.TabIndex = 3;
+            txtConnectS7Port.Text = "102";
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 17F);
@@ -474,5 +485,6 @@
         private TextBox txtConnectS7Rack;
         private Label statusMasterS7;
         private ComboBox comboBoxConnectS7CpuType;
+        private TextBox txtConnectS7Port;
     }
 }

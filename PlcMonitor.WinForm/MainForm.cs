@@ -69,6 +69,10 @@ namespace PlcMonitor.WinForm
             if (!_modbusTcpClient.IsConnected) return;
             await _modbusTcpClient.DisconnectAsync();
             await Task.Delay(1500);
+            DisconnectTcp();
+        }
+        private async void DisconnectTcp()
+        {
             btnConnectTcp.Enabled = true;
             txtConnectTcpSlaveId.Enabled = true;
             txtConnectTcpHost.Enabled = true;
@@ -113,7 +117,11 @@ namespace PlcMonitor.WinForm
             {
                 while (true)
                 {
-                    if (btnConnectTcp.Enabled) break;
+                    if (!_modbusTcpClient.IsConnected)
+                    {
+                        this.Invoke(() => DisconnectTcp());
+                        break;
+                    }
                     var randData = _random.Next(10, 100);
                     var writeData = await _modbusTcpClient.WriteAsync(ModbusFunction.HR + "1", DataPointType.Float, randData);
                     var readData = await _modbusTcpClient.ReadAsync(ModbusFunction.HR + "1", DataPointType.Float);
@@ -147,6 +155,10 @@ namespace PlcMonitor.WinForm
             if (!_modbusSerialClient.IsConnected) return;
             await _modbusSerialClient.DisconnectAsync();
             await Task.Delay(1500);
+            DisconnectSerial();
+        }
+        private async void DisconnectSerial()
+        {
             btnConnectSerial.Enabled = true;
             txtConnectSerialSlaveId.Enabled = true;
             txtConnectSerialPortName.Enabled = true;
@@ -203,7 +215,11 @@ namespace PlcMonitor.WinForm
             {
                 while (true)
                 {
-                    if (btnConnectSerial.Enabled) break;
+                    if (!_modbusSerialClient.IsConnected)
+                    {
+                        this.Invoke(() => DisconnectSerial());
+                        break;
+                    }
                     var randData = _random.Next(10, 100);
                     var writeData = await _modbusSerialClient.WriteAsync(ModbusFunction.HR + "1", DataPointType.Float, randData);
                     var readData = await _modbusSerialClient.ReadAsync(ModbusFunction.HR + "1", DataPointType.Float);
@@ -218,7 +234,7 @@ namespace PlcMonitor.WinForm
         }
         #endregion
 
-        #region Modbus Master Tcp
+        #region S7 Master
         private void InitControlsS7Master()
         {
             btnConnectS7.Click += btnConnectS7_Click;
@@ -239,10 +255,16 @@ namespace PlcMonitor.WinForm
             if (!_s7Client.IsConnected) return;
             await _s7Client.DisconnectAsync();
             await Task.Delay(1500);
+            DisconnectS7();
+        }
+        private async void DisconnectS7()
+        {
             btnConnectS7.Enabled = true;
             txtConnectS7Rack.Enabled = true;
             txtConnectS7Host.Enabled = true;
             txtConnectS7Slot.Enabled = true;
+            txtConnectS7Port.Enabled = true;
+            comboBoxConnectS7CpuType.Enabled = true;
             statusMasterS7.Text = $"状态：已断开连接";
             WriteLog($"[statusMasterS7]状态：已断开连接");
         }
@@ -259,10 +281,22 @@ namespace PlcMonitor.WinForm
             txtConnectS7Slot.Enabled = false;
             _ = byte.TryParse(txtConnectS7Rack.Text, out var rack);
             txtConnectS7Rack.Enabled = false;
+            _ = int.TryParse(txtConnectS7Port.Text, out var port);
+            txtConnectS7Port.Enabled = false;
+            var cpuType = comboBoxConnectS7CpuType.SelectedItem;
+            comboBoxConnectS7CpuType.Enabled = false;
             btnConnectS7.Enabled = false;
             statusMasterS7.Text = "状态：连接中...";
             WriteLog($"[statusMasterS7]状态：连接中...");
-            var device = new Device { DeviceType = DeviceType.SiemensS7, IpAddress = slaveHost, Rack = rack, Slot = slot };
+            var device = new Device
+            {
+                DeviceType = DeviceType.SiemensS7,
+                IpAddress = slaveHost,
+                Port = port,
+                Rack = rack,
+                Slot = slot,
+                CpuType = cpuType?.ToString()
+            };
             _s7Client = CommunicationClientFactory.CreateClient(device);
             var ress = await _s7Client.ConnectAsync();
             if (!ress.Success)
@@ -271,6 +305,8 @@ namespace PlcMonitor.WinForm
                 txtConnectS7Rack.Enabled = true;
                 txtConnectS7Host.Enabled = true;
                 txtConnectS7Slot.Enabled = true;
+                txtConnectS7Port.Enabled = true;
+                comboBoxConnectS7CpuType.Enabled = true;
                 statusMasterS7.Text = $"状态：[{ress.ErrorMessage}]";
                 WriteLog($"[statusMasterS7]状态：[{ress.ErrorMessage}]");
                 return;
@@ -283,10 +319,14 @@ namespace PlcMonitor.WinForm
             {
                 while (true)
                 {
-                    if (btnConnectS7.Enabled) break;
+                    if (!_s7Client.IsConnected)
+                    {
+                        this.Invoke(() => DisconnectS7());
+                        break;
+                    }
                     var randData = _random.Next(10, 100);
-                    var writeData = await _s7Client.WriteAsync(ModbusFunction.HR + "1", DataPointType.Float, randData);
-                    var readData = await _s7Client.ReadAsync(ModbusFunction.HR + "1", DataPointType.Float);
+                    var writeData = await _s7Client.WriteAsync("db2.dbd4", DataPointType.Float, randData);
+                    var readData = await _s7Client.ReadAsync("db2.dbx0.1", DataPointType.Float);
                     this.Invoke(() =>
                     {
                         statusMasterS7.Text = $"data：[write={(writeData.Success ? randData : writeData.ErrorMessage)}] [read={(readData.Success ? readData.Data : readData.ErrorMessage)}]";

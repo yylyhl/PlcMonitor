@@ -18,18 +18,19 @@
         public int BaudRate { get; set; } = 9600;
         public System.IO.Ports.Parity? Parity { get; set; } = System.IO.Ports.Parity.None;
         public int? DataBits { get; set; } = 8;
-        public System.IO.Ports.StopBits? StopBits { get; set; } = System.IO.Ports.StopBits.One; 
+        public System.IO.Ports.StopBits? StopBits { get; set; } = System.IO.Ports.StopBits.One;
         #endregion
 
         #region S7
         /// <summary>
+        /// S7机架：S7-300/400=0；S7-1200/1500/200SMART=0
+        /// </summary>
+        public int Rack { get; set; } = 0;
+        /// <summary>
         /// S7插槽：S7-300/400CPU=2；1200/1500=1；200SMART=1
         /// </summary>
         public int Slot { get; set; } = 1;
-        /// <summary>
-        /// S7机架：S7-300/400=0；S7-1200/1500/200SMART=0
-        /// </summary>
-        public int Rack { get; set; } = 0; 
+        public string CpuType { get; set; }
         #endregion
 
         #region OPC UA
