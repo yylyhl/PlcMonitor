@@ -59,9 +59,7 @@ namespace PlcMonitor.WinForm
         private void InitControlsModbusMasterTcp()
         {
             btnConnectTcp.Click += btnConnectTcp_Click;
-            //Controls.Add(btnConnectTcp);
             btnDisconnectTcp.Click += btnDisconnectTcp_Click;
-            //Controls.Add(btnDisconnectTcp);
         }
         ICommunicationClient _modbusTcpClient;
         private async void btnDisconnectTcp_Click(object sender, EventArgs e)
@@ -141,13 +139,10 @@ namespace PlcMonitor.WinForm
         private void InitControlsModbusMasterSerialPort()
         {
             btnConnectSerial.Click += btnConnectSerial_Click;
-            //Controls.Add(btnConnectSerial);
             btnDisconnectSerial.Click += btnDisconnectSerial_Click;
-            //Controls.Add(btnDisconnectSerial);
             comboBoxConnectSerialMode.Items.Add(SerialMode.RTU);
             comboBoxConnectSerialMode.Items.Add(SerialMode.ASCII);
             comboBoxConnectSerialMode.SelectedIndex = 0;
-            //Controls.Add(comboBoxConnectSerialMode);
         }
         ICommunicationClient _modbusSerialClient;
         private async void btnDisconnectSerial_Click(object sender, EventArgs e)
@@ -344,9 +339,7 @@ namespace PlcMonitor.WinForm
         private void InitControlsModbusSlaveTcp()
         {
             btnStartSlaveServerTcp.Click += btnStartSlaveServerTcp_Click;
-            //Controls.Add(btnStartSlaveServerTcp);
             btnStopSlaveServerTcp.Click += btnStopSlaveServerTcp_Click;
-            //Controls.Add(btnStopSlaveServerTcp);
         }
         ModbusTcpSlave _modbusTcpSlave;
         private TcpListener? _tcpListener;
@@ -493,13 +486,10 @@ namespace PlcMonitor.WinForm
         private void InitControlsModbusSlaveSerialPort()
         {
             btnStartSlaveServerSerial.Click += btnStartSlaveServerSerial_Click;
-            Controls.Add(btnStartSlaveServerSerial);
             btnStopSlaveServerSerial.Click += btnStopSlaveServerSerial_Click;
-            Controls.Add(btnStopSlaveServerSerial);
             comboBoxSlaveServerSerialMode.Items.Add(SerialMode.RTU.ToString());
             comboBoxSlaveServerSerialMode.Items.Add(SerialMode.ASCII);
             comboBoxSlaveServerSerialMode.SelectedIndex = 0;
-            Controls.Add(comboBoxSlaveServerSerialMode);
         }
         ICommunicationServer _modbusSerialSlave;
         //ModbusSerialSlave _modbusSerialSlave = null;
