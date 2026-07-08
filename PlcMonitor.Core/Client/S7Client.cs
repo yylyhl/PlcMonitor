@@ -48,7 +48,7 @@ namespace PlcMonitor.Core
 
         public async Task<CommunicationResult<object?>> ReadAsync(string address, DataPointType dataType)
         {
-            if (!IsConnected || _plc == null)
+            if (!IsConnected || _plc == null || !_plc.IsConnected)
                 return CommunicationResult<object?>.Fail("设备未连接");
             try
             {
@@ -79,7 +79,7 @@ namespace PlcMonitor.Core
 
         public async Task<CommunicationResult<bool>> WriteAsync(string address, DataPointType dataType, object value)
         {
-            if (!IsConnected || _plc == null)
+            if (!IsConnected || _plc == null || !_plc.IsConnected)
                 return CommunicationResult<bool>.Fail("设备未连接");
 
             try

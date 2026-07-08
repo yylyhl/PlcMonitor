@@ -36,7 +36,7 @@ namespace PlcMonitor.Core
                         RejectSHA1SignedCertificates = false,
                         MinimumCertificateKeySize = 1024
                     },
-                    TransportQuotas = new TransportQuotas { OperationTimeout = 3000 },
+                    TransportQuotas = new TransportQuotas { OperationTimeout = 1000 },
                     ClientConfiguration = new ClientConfiguration { DefaultSessionTimeout = 60000 }
                 };
                 //await _config.Validate(ApplicationType.Client);

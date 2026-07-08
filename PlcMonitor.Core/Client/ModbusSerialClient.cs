@@ -25,7 +25,68 @@ namespace PlcMonitor.Core
         {
             DeviceInfo = device;
         }
-
+        #region Heart Beat Check
+        private CancellationTokenSource _cts;
+        private bool _isRunning = false;
+        private Task _heartBeatTask;
+        private int _slaveFailCount = 0;
+        private void StopHeartBeat()
+        {
+            if (!_isRunning) return;
+            _cts?.Cancel();
+            _heartBeatTask?.Wait(700);
+            _cts?.Dispose();
+            _isRunning = false;
+            _slaveFailCount = 0;
+        }
+        private async Task StartHeartBeat(byte slaveId)
+        {
+            if (_isRunning) return;
+            _cts = new CancellationTokenSource();
+            _isRunning = true;
+            _heartBeatTask = Task.Run(async () =>
+            {
+                while (!_cts.Token.IsCancellationRequested)
+                {
+                    var result = await TryReadTestRegAsync(slaveId);
+                    if (result)
+                    {
+                        _slaveFailCount = 0;// 通信正常：清零失败计数，标记在线
+                    }
+                    else
+                    {
+                        Interlocked.Increment(ref _slaveFailCount);// 通信失败：计数+1
+                        if (_slaveFailCount >= 2)
+                        {
+                            await DisconnectAsync();// 连续失败达到阈值，判定离线
+                            break;
+                        }
+                    }
+                    await Task.Delay(500, _cts.Token);
+                }
+            }, _cts.Token);
+        }
+        private async Task<bool> TryReadTestRegAsync(byte slaveId)
+        {
+            if (_master == null || _serialPort == null || !_serialPort.IsOpen) return false;
+            //using var timeCts = new CancellationTokenSource(200);
+            try
+            {
+                var delayTask = Task.Delay(200);
+                var completed = await Task.WhenAny(_master.ReadHoldingRegistersAsync(slaveId, 0, 1), delayTask);
+                return completed != delayTask;
+            }
+            catch (TimeoutException)
+            {
+                return false;
+            }
+            catch (Exception ex)
+            {
+                OnLog?.Invoke($"CheckHeartBeat-err[{ex.Message}]");
+                return true;
+            }
+        } 
+        #endregion
         public async Task<CommunicationResult<bool>> ConnectAsync()
         {
             try
@@ -37,8 +98,8 @@ namespace PlcMonitor.Core
                     Parity = DeviceInfo.Parity ?? Parity.None,
                     DataBits = DeviceInfo.DataBits ?? 8,
                     StopBits = DeviceInfo.StopBits ?? StopBits.One,
-                    ReadTimeout = 3000,
-                    WriteTimeout = 3000
+                    ReadTimeout = 1700,
+                    WriteTimeout = 1700
                 };
                 _serialPort.DataReceived += (sender, args) =>
                 {
@@ -49,7 +110,6 @@ namespace PlcMonitor.Core
                     OnLog?.Invoke($"[ModbusSerialClient]ErrorReceived-{sender} [{args.EventType}]");
                 };
                 _serialPort.Open();
-
                 var factory = new ModbusFactory();
                 var serialPort = new SerialPortAdapter(_serialPort);//serialPort = new SerialPort(DeviceInfo.PortName);
                 if (DeviceInfo.SerialMode == SerialMode.ASCII)
@@ -58,6 +118,11 @@ namespace PlcMonitor.Core
                 }
                 else { _master = factory.CreateRtuMaster(serialPort); }
                 _master.Transport.Retries = 3;
+                if (!await TryReadTestRegAsync(DeviceInfo.SlaveId))
+                {
+                    await DisconnectAsync();
+                    return CommunicationResult<bool>.Fail($"连接失败");
+                }
                 IsConnected = true;
                 OnConnectionStateChanged?.Invoke();
                 //var modbusData = await ReadAsync("HR4", DataPointType.Float);
@@ -76,11 +141,14 @@ namespace PlcMonitor.Core
             {
                 try
                 {
+                    StopHeartBeat();
                     _master?.Dispose();
                     if (_serialPort?.IsOpen == true)
                         _serialPort.Close();
 
                     _serialPort?.Dispose();
+                    _master?.Dispose();
+                    _master = null;
                 }
                 finally
                 {
@@ -94,8 +162,7 @@ namespace PlcMonitor.Core
 
         public async Task<CommunicationResult<object?>> ReadAsync(string address, DataPointType dataType)
         {
-            if (!IsConnected || _master == null) return CommunicationResult<object?>.Fail("设备未连接");
-
+            if (!IsConnected || _master == null || !_serialPort.IsOpen) return CommunicationResult<object?>.Fail("设备未连接");
             try
             {
                 var (area, addr) = ParseAddress(address);
@@ -127,22 +194,20 @@ namespace PlcMonitor.Core
                         return CommunicationResult<object?>.Ok(CommunicationResult<object?>.Fail("不支持的寄存器区域"));
                 }
             }
-            catch (InvalidModbusRequestException ex)
+            catch (TimeoutException ex)
             {
                 await DisconnectAsync();
-                return CommunicationResult<object?>.Fail($"读取失败2：[{address}]{ex.Message}");
+                return CommunicationResult<object?>.Fail($"Read-TimeoutException：[{address}]{ex.Message}");
             }
             catch (Exception ex)
             {
-                return CommunicationResult<object?>.Fail($"读取失败：[{address}]{ex.Message}");
+                return CommunicationResult<object?>.Fail($"Read-Exception：[{address}]{ex.Message}");
             }
         }
 
-        public async Task<CommunicationResult<bool>> WriteAsync(
-            string address, DataPointType dataType, object value)
+        public async Task<CommunicationResult<bool>> WriteAsync(string address, DataPointType dataType, object value)
         {
-            if (!IsConnected || _master == null) return CommunicationResult<bool>.Fail("设备未连接");
-
+            if (!IsConnected || _master == null || !_serialPort.IsOpen) return CommunicationResult<bool>.Fail("设备未连接");
             try
             {
                 var (area, addr) = ParseAddress(address);
@@ -171,14 +236,14 @@ namespace PlcMonitor.Core
 
                 return CommunicationResult<bool>.Fail("该区域不支持写入");
             }
-            catch (InvalidModbusRequestException ex)
+            catch (TimeoutException ex)
             {
                 await DisconnectAsync();
-                return CommunicationResult<bool>.Fail($"写入失败2：[{address}]{ex.Message}");
+                return CommunicationResult<bool>.Fail($"Write-TimeoutException：[{address}]{ex.Message}");
             }
             catch (Exception ex)
             {
-                return CommunicationResult<bool>.Fail($"写入失败：[{address}]{ex.Message}");
+                return CommunicationResult<bool>.Fail($"Write-Exception：[{address}]{ex.Message}");
             }
         }
 

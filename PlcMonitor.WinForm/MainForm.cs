@@ -228,7 +228,7 @@ namespace PlcMonitor.WinForm
                         statusMasterSerial.Text = $"data：[write={(writeData.Success ? randData : writeData.ErrorMessage)}] [read={(readData.Success ? readData.Data : readData.ErrorMessage)}]";
                         WriteLog($"[statusMasterSerial]data：[write={(writeData.Success ? randData : writeData.ErrorMessage)}] [read={(readData.Success ? readData.Data : readData.ErrorMessage)}]");
                     });
-                    Thread.Sleep(1000);
+                    Thread.Sleep(2000);
                 }
             });
         }

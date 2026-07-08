@@ -1,5 +1,4 @@
 ﻿using NModbus;
-using S7.Net;
 using System.Net.Sockets;
 
 namespace PlcMonitor.Core
@@ -33,8 +32,8 @@ namespace PlcMonitor.Core
                 await _tcpClient.ConnectAsync(DeviceInfo.IpAddress, DeviceInfo.Port == 0 ? 502 : DeviceInfo.Port);
                 var factory = new ModbusFactory();
                 _master = factory.CreateMaster(_tcpClient);
-                _master.Transport.ReadTimeout = 3000;
-                _master.Transport.WriteTimeout = 3000;
+                _master.Transport.ReadTimeout = 1700;
+                _master.Transport.WriteTimeout = 1700;
                 IsConnected = true;
                 OnConnectionStateChanged?.Invoke();
                 return CommunicationResult<bool>.Ok(true);
@@ -60,7 +59,8 @@ namespace PlcMonitor.Core
 
         public async Task<CommunicationResult<object?>> ReadAsync(string address, DataPointType dataType)
         {
-            if (!IsConnected || _master == null) return CommunicationResult<object?>.Fail("设备未连接");
+            if (!IsConnected || _tcpClient == null || !_tcpClient.Connected || _master == null) 
+                return CommunicationResult<object?>.Fail("设备未连接");
 
             try
             {
@@ -126,7 +126,8 @@ namespace PlcMonitor.Core
         }
         public async Task<CommunicationResult<bool>> WriteAsync(string address, DataPointType dataType, object value)
         {
-            if (!IsConnected || _master == null) return CommunicationResult<bool>.Fail("设备未连接");
+            if (!IsConnected || _tcpClient == null || !_tcpClient.Connected || _master == null) 
+                return CommunicationResult<bool>.Fail("设备未连接");
 
             try
             {
