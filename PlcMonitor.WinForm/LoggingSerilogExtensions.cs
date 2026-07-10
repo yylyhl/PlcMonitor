@@ -32,6 +32,7 @@ namespace PlcMonitor.WinForm
         {
             return new LoggerConfiguration()
                 .Enrich.FromLogContext()
+                //.Enrich.WithHttpRequestId()
                 .MinimumLevel.Debug()//{Message:lj}// lj = literal json，消息自动转义换行、引号，打印干净单行
                 .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
                 //.WriteTo.Console(outputTemplate:"[{Timestamp:HH:mm:ss} {Level:u3}] {ThreadId} {SourceContext} | {Message:lj}{NewLine}{Exception}")
@@ -46,6 +47,7 @@ namespace PlcMonitor.WinForm
                     buffered: true,
                     flushToDiskInterval: TimeSpan.FromSeconds(2),
                     encoding: new System.Text.UTF8Encoding(encoderShouldEmitUTF8Identifier: true),
+                    //outputTemplate: "{Timestamp:HH:mm:ss.fff} [{TraceId}] [{Level:u3}] Thread:{ThreadId} {SourceContext}: {Properties} {Message}{NewLine}{Exception}"
                     outputTemplate: "{Timestamp:HH:mm:ss.fff} [{Level:u3}] Thread:{ThreadId} {SourceContext}: {Properties} {Message}{NewLine}{Exception}"
                 ))
                 .WriteTo.Async(a => a.File(
@@ -59,6 +61,7 @@ namespace PlcMonitor.WinForm
                     buffered: true,
                     flushToDiskInterval: TimeSpan.FromSeconds(2),
                     encoding: new System.Text.UTF8Encoding(encoderShouldEmitUTF8Identifier: true),
+                    //outputTemplate: "{Timestamp:HH:mm:ss.fff} [{TraceId}] [{Level:u3}] Thread:{ThreadId} {SourceContext}: {Properties} {Message}{NewLine}{Exception}"
                     outputTemplate: "{Timestamp:HH:mm:ss.fff} [{Level:u3}] Thread:{ThreadId} {SourceContext}: {Properties} {Message}{NewLine}{Exception}"
                 ).Filter.ByIncludingOnly(e => e.Level == LogEventLevel.Warning))
                 .WriteTo.Async(a => a.File(
@@ -72,6 +75,7 @@ namespace PlcMonitor.WinForm
                     buffered: true,
                     flushToDiskInterval: TimeSpan.FromSeconds(2),
                     encoding: new System.Text.UTF8Encoding(encoderShouldEmitUTF8Identifier: true),
+                    //outputTemplate: "{Timestamp:HH:mm:ss.fff} [{TraceId}] [{Level:u3}] Thread:{ThreadId} {SourceContext}: {Message}{NewLine}{Exception}"
                     outputTemplate: "{Timestamp:HH:mm:ss.fff} [{Level:u3}] Thread:{ThreadId} {SourceContext}: {Message}{NewLine}{Exception}"
                 ));
         }
@@ -79,6 +83,7 @@ namespace PlcMonitor.WinForm
         {
             return new LoggerConfiguration()
                 .Enrich.FromLogContext()
+                //.Enrich.WithHttpRequestId()
                 .MinimumLevel.Debug()//{Message:lj}// lj = literal json，消息自动转义换行、引号，打印干净单行
                 .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
                 //.WriteTo.Console(outputTemplate:"[{Timestamp:HH:mm:ss} {Level:u3}] {ThreadId} {SourceContext} | {Message:lj}{NewLine}{Exception}")
@@ -94,6 +99,7 @@ namespace PlcMonitor.WinForm
                         buffered: true,
                         flushToDiskInterval: TimeSpan.FromSeconds(2),
                         encoding: new System.Text.UTF8Encoding(encoderShouldEmitUTF8Identifier: true),
+                        //outputTemplate: "{Timestamp:HH:mm:ss.fff} [{TraceId}] [{Level:u3}] Thread:{ThreadId} {SourceContext}: {Properties} {Message}{NewLine}{Exception}"
                         outputTemplate: "{Timestamp:HH:mm:ss.fff} [{Level:u3}] Thread:{ThreadId} {SourceContext}: {Properties} {Message}{NewLine}{Exception}"
                     );
                     a.File(
@@ -107,6 +113,7 @@ namespace PlcMonitor.WinForm
                         buffered: true,
                         flushToDiskInterval: TimeSpan.FromSeconds(2),
                         encoding: new System.Text.UTF8Encoding(encoderShouldEmitUTF8Identifier: true),
+                        //outputTemplate: "{Timestamp:HH:mm:ss.fff} [{TraceId}] [{Level:u3}] Thread:{ThreadId} {SourceContext}: {Properties} {Message}{NewLine}{Exception}"
                         outputTemplate: "{Timestamp:HH:mm:ss.fff} [{Level:u3}] Thread:{ThreadId} {SourceContext}: {Properties} {Message}{NewLine}{Exception}"
                     ).Filter.ByIncludingOnly(e => e.Level == LogEventLevel.Warning);
                 }).WriteTo.Async(a => a.File(
@@ -120,6 +127,7 @@ namespace PlcMonitor.WinForm
                     buffered: true,
                     flushToDiskInterval: TimeSpan.FromSeconds(2),
                     encoding: new System.Text.UTF8Encoding(encoderShouldEmitUTF8Identifier: true),
+                    //outputTemplate: "{Timestamp:HH:mm:ss.fff} [{TraceId}] [{Level:u3}] Thread:{ThreadId} {SourceContext}: {Properties} {Message}{NewLine}{Exception}"
                     outputTemplate: "{Timestamp:HH:mm:ss.fff} [{Level:u3}] Thread:{ThreadId} {SourceContext}: {Properties} {Message}{NewLine}{Exception}"
                 ));
         }

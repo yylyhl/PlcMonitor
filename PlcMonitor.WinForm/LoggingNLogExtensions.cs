@@ -51,7 +51,10 @@ namespace PlcMonitor.WinForm
             }
 
             //builder.ClearProviders();
-            builder.AddNLog();// 桥接到Microsoft.Extensions.Logging抽象
+            builder.AddNLog(new NLogProviderOptions
+            {
+                //RemoveLoggerFactoryFilter = false // 读取appsettings的LogLevel覆盖规则
+            });// 桥接到Microsoft.Extensions.Logging抽象
             return builder;
         }
         private static LoggingConfiguration DefaultConfig()
@@ -137,6 +140,14 @@ namespace PlcMonitor.WinForm
             var consoleTarget = new ConsoleTarget("console");
             var consoleTargetAsync = new AsyncTargetWrapper(consoleTarget);
             config.AddTarget(consoleTargetAsync);
+
+            #region 过滤规则放rule最前面，匹配后终止后续规则，等价Override抬高最低级别
+            var nullTarget = new NullTarget("null");
+            //config.AddTarget(nullTarget);
+            config.LoggingRules.Add(new LoggingRule("Microsoft.AspNetCore.*", NLog.LogLevel.Warn, nullTarget) { Final = true, FinalMinLevel = NLog.LogLevel.Warn });
+            config.LoggingRules.Add(new LoggingRule("Microsoft.Hosting.Lifetime.*", NLog.LogLevel.Info, nullTarget) { Final = true, FinalMinLevel = NLog.LogLevel.Info });
+            config.LoggingRules.Add(new LoggingRule("System.*", NLog.LogLevel.Warn, nullTarget) { Final = true, FinalMinLevel = NLog.LogLevel.Warn });
+            #endregion
 
             config.AddRule(NLog.LogLevel.Error, NLog.LogLevel.Fatal, errorFileTargetAsync);
             config.AddRule(NLog.LogLevel.Warn, NLog.LogLevel.Warn, warnFileTargetAsync);

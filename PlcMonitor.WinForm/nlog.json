@@ -1,5 +1,7 @@
 {
   "NLog": {
+    "RemoveLoggerFactoryFilter": false,
+    "RemoveLoggerFactoryFilterDesc": "RemoveLoggerFactoryFilter=false时，读取appsettings的LogLevel覆盖规则",
     "autoReload": true,
     "targets": {
       "errorAsync": {

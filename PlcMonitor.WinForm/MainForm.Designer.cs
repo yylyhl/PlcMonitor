@@ -228,7 +228,7 @@
             txtConnectTcpHost.Location = new Point(224, 28);
             txtConnectTcpHost.Name = "txtConnectTcpHost";
             txtConnectTcpHost.PlaceholderText = "host";
-            txtConnectTcpHost.Size = new Size(80, 23);
+            txtConnectTcpHost.Size = new Size(97, 23);
             txtConnectTcpHost.TabIndex = 3;
             txtConnectTcpHost.Text = "127.0.0.1";
             // 
@@ -243,7 +243,7 @@
             // 
             // txtConnectTcpPort
             // 
-            txtConnectTcpPort.Location = new Point(310, 28);
+            txtConnectTcpPort.Location = new Point(325, 28);
             txtConnectTcpPort.Name = "txtConnectTcpPort";
             txtConnectTcpPort.PlaceholderText = "port";
             txtConnectTcpPort.Size = new Size(43, 23);
@@ -355,7 +355,7 @@
             // 
             // btnConnectS7
             // 
-            btnConnectS7.Location = new Point(15, 41);
+            btnConnectS7.Location = new Point(15, 29);
             btnConnectS7.Name = "btnConnectS7";
             btnConnectS7.Size = new Size(161, 35);
             btnConnectS7.TabIndex = 0;
@@ -364,7 +364,7 @@
             // 
             // btnDisconnectS7
             // 
-            btnDisconnectS7.Location = new Point(15, 82);
+            btnDisconnectS7.Location = new Point(15, 95);
             btnDisconnectS7.Name = "btnDisconnectS7";
             btnDisconnectS7.Size = new Size(161, 35);
             btnDisconnectS7.TabIndex = 0;
@@ -373,17 +373,17 @@
             // 
             // txtConnectS7Host
             // 
-            txtConnectS7Host.Location = new Point(189, 47);
+            txtConnectS7Host.Location = new Point(182, 35);
             txtConnectS7Host.Name = "txtConnectS7Host";
             txtConnectS7Host.PlaceholderText = "host";
-            txtConnectS7Host.Size = new Size(80, 23);
+            txtConnectS7Host.Size = new Size(97, 23);
             txtConnectS7Host.TabIndex = 3;
-            txtConnectS7Host.Text = "127.0.0.1";
+            txtConnectS7Host.Text = "127.110.110.111";
             // 
             // comboBoxConnectS7CpuType
             // 
             comboBoxConnectS7CpuType.FormattingEnabled = true;
-            comboBoxConnectS7CpuType.Location = new Point(345, 45);
+            comboBoxConnectS7CpuType.Location = new Point(182, 64);
             comboBoxConnectS7CpuType.Name = "comboBoxConnectS7CpuType";
             comboBoxConnectS7CpuType.Size = new Size(82, 25);
             comboBoxConnectS7CpuType.TabIndex = 4;
@@ -391,7 +391,7 @@
             // 
             // txtConnectS7Slot
             // 
-            txtConnectS7Slot.Location = new Point(310, 47);
+            txtConnectS7Slot.Location = new Point(374, 35);
             txtConnectS7Slot.Name = "txtConnectS7Slot";
             txtConnectS7Slot.PlaceholderText = "插槽：S7-300/400CPU=2；1200/1500=1；200SMART=1";
             txtConnectS7Slot.Size = new Size(29, 23);
@@ -400,7 +400,7 @@
             // 
             // txtConnectS7Rack
             // 
-            txtConnectS7Rack.Location = new Point(275, 47);
+            txtConnectS7Rack.Location = new Point(339, 35);
             txtConnectS7Rack.Name = "txtConnectS7Rack";
             txtConnectS7Rack.PlaceholderText = "机架：S7-300/400=0；S7-1200/1500/200SMART=0";
             txtConnectS7Rack.Size = new Size(29, 23);
@@ -410,7 +410,7 @@
             // statusMasterS7
             // 
             statusMasterS7.AutoSize = true;
-            statusMasterS7.Location = new Point(189, 91);
+            statusMasterS7.Location = new Point(182, 104);
             statusMasterS7.Name = "statusMasterS7";
             statusMasterS7.Size = new Size(104, 17);
             statusMasterS7.TabIndex = 2;
@@ -418,7 +418,7 @@
             // 
             // txtConnectS7Port
             // 
-            txtConnectS7Port.Location = new Point(189, 22);
+            txtConnectS7Port.Location = new Point(285, 35);
             txtConnectS7Port.Name = "txtConnectS7Port";
             txtConnectS7Port.PlaceholderText = "port";
             txtConnectS7Port.Size = new Size(43, 23);
