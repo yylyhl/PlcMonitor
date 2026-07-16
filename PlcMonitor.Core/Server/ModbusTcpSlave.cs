@@ -28,11 +28,22 @@ namespace PlcMonitor.Core
         /// </summary>
         public event Action<string>? OnLog;
 
-        #region 对外暴露的转发事件
+        #region 对外暴露的事件
         public event Action<byte, PointOperation, ushort, ushort[], ushort>? HoldingRegistersStorageOperationOccurred;//OnHoldingRegistersRead
         public event Action<byte, PointOperation, ushort, ushort[]>? InputRegistersStorageOperationOccurred;//OnHoldingRegistersWritten
         public event Action<byte, PointOperation, ushort, bool[], ushort>? CoilDiscretesStorageOperationOccurred;//OnCoilsRead
         public event Action<byte, PointOperation, ushort, bool[]>? CoilInputsStorageOperationOccurred;//OnCoilsWritten
+
+        /// <summary>
+        /// 客户端新连接
+        /// 参数：客户端IP、端口
+        /// </summary>
+        public event Action<string>? OnClientConnected;
+        /// <summary>
+        /// 客户端断开连接
+        /// 参数：客户端IP、端口、断开原因
+        /// </summary>
+        public event Action<string, string>? OnClientDisconnected;
         #endregion
         public ModbusTcpSlave(Device device)
         {
@@ -98,12 +109,14 @@ namespace PlcMonitor.Core
                     var slave = factory.CreateSlave(slaveId, dataStore);
                     _slaveNetwork.AddSlave(slave);
                 }
+
                 // 后台运行监听循环
                 _listenTask = Task.Run(async () =>
                 {
                     try
                     {
-                        await _slaveNetwork.ListenAsync();
+                        IsStarted = true;
+                        await _slaveNetwork.ListenAsync(_cts.Token);
                     }
                     catch (ObjectDisposedException)
                     {
@@ -117,11 +130,13 @@ namespace PlcMonitor.Core
                     {
                         OnLog?.Invoke($"[ModbusTcpSlave]从站 [{SlaveIds}] 监听异常: {ex.Message}");
                     }
+                    finally { await StopAsync(); }
                 }, _cts.Token);
                 OnLog?.Invoke($"[ModbusTcpSlave]从站 [{SlaveIds}] 服务已启动，监听地址:{DeviceInfo.IpAddress}:{DeviceInfo.Port}, 站号[{string.Join(',', SlaveStores.Keys)}]");
             }
             catch (SocketException ex)
             {
+                await StopAsync();
                 OnLog?.Invoke($"[ModbusTcpSlave]从站 [{SlaveIds}] 启动失败，端口 {DeviceInfo.Port} 被占用或无权限: {ex.Message}");
                 throw;
             }
@@ -134,6 +149,7 @@ namespace PlcMonitor.Core
         {
             try
             {
+                IsStarted = false;
                 _cts?.Cancel();
                 if (_listenTask != null)
                     await _listenTask.WaitAsync(TimeSpan.FromSeconds(3));

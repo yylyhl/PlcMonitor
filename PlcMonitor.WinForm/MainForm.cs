@@ -117,7 +117,8 @@ namespace PlcMonitor.WinForm
                 {
                     if (!_modbusTcpClient.IsConnected)
                     {
-                        this.Invoke(() => DisconnectTcp());
+                        await Task.Delay(500);
+                        if (!btnConnectTcp.Enabled) this.Invoke(() => DisconnectTcp());
                         break;
                     }
                     var randData = _random.Next(10, 100);
@@ -341,36 +342,15 @@ namespace PlcMonitor.WinForm
             btnStartSlaveServerTcp.Click += btnStartSlaveServerTcp_Click;
             btnStopSlaveServerTcp.Click += btnStopSlaveServerTcp_Click;
         }
-        ModbusTcpSlave _modbusTcpSlave;
-        private TcpListener? _tcpListener;
-        private NModbus.IModbusSlaveNetwork? _slaveNetwork;
-        private Task? _tcpListenTask;
-        private CancellationTokenSource? _ctsTcpListenTask;
+        ICommunicationServer _modbusTcpSlave;
+        //ModbusTcpSlave _modbusTcpSlave;
         private async void btnStopSlaveServerTcp_Click(object sender, EventArgs e)
         {
-            await _modbusTcpSlave?.StopAsync();
-            try
-            {
-                _ctsTcpListenTask?.Cancel();
-                if (_tcpListenTask != null)
-                    await _tcpListenTask.WaitAsync(TimeSpan.FromSeconds(3));
-            }
-            catch { }
-            finally
-            {
-                _slaveNetwork?.Dispose();
-                _slaveNetwork = null;
-                _tcpListener?.Stop();
-                _tcpListener = null;
-                _tcpListenTask = null;
-                _ctsTcpListenTask?.Dispose();
-                _ctsTcpListenTask = null;
-
-                txtSlaveServerTcpPort.Enabled = true;
-                btnStartSlaveServerTcp.Enabled = true;
-                statusSlaveServerTcp.Text = "状态：已停止";
-                WriteLog($"[statusSlaveServerTcp]状态：已停止");
-            }
+            if (_modbusTcpSlave != null && _modbusTcpSlave.IsStarted) await _modbusTcpSlave?.StopAsync();
+            txtSlaveServerTcpPort.Enabled = true;
+            btnStartSlaveServerTcp.Enabled = true;
+            statusSlaveServerTcp.Text = "状态：已停止";
+            WriteLog($"[statusSlaveServerTcp]状态：已停止");
         }
         private void OutputSlaveServerTcpStatus(string message)
         {
@@ -394,8 +374,9 @@ namespace PlcMonitor.WinForm
             btnStartSlaveServerTcp.Enabled = false;
             statusSlaveServerTcp.Text = "状态：启动中...";
             WriteLog($"[statusSlaveServerTcp]状态：启动中...");
-
-            _modbusTcpSlave = new ModbusTcpSlave(new Device() { IpAddress = "127.0.0.1", Port = port });
+            var device = new Device() { IpAddress = "127.0.0.1", Port = port, DeviceType = DeviceType.ModbusTcp };
+            _modbusTcpSlave = CommunicationServerFactory.CreateServer(device);
+            _modbusTcpSlave = CommunicationServerFactory.CreateServer(device);
             if (!_modbusTcpSlave.AddSlave(slaveId, out var msg))
             {
                 MessageBox.Show(msg, "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -420,65 +401,6 @@ namespace PlcMonitor.WinForm
                 OutputSlaveServerTcpStatus($"[{opera} 离散输入] 站号:{slaveId} 起始地址:{addr} 值:[{string.Join(", ", data)}]");
             };
             await _modbusTcpSlave.StartAsync();
-        }
-        private async void btnStartSlaveServerTcp_Click2(object sender, EventArgs e)
-        {
-            if (_tcpListenTask != null && !_ctsTcpListenTask!.IsCancellationRequested)
-            {
-                MessageBox.Show("已启动", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                return;
-            }
-
-            _ = byte.TryParse(txtSlaveServerTcpSlaveId.Text, out var slaveId);
-            txtSlaveServerTcpSlaveId.Enabled = false;
-            _ = int.TryParse(txtSlaveServerTcpPort.Text, out var port);
-            txtSlaveServerTcpPort.Enabled = false;
-            btnStartSlaveServerTcp.Enabled = false;
-            statusSlaveServerTcp.Text = "状态：启动中...";
-            WriteLog($"[statusSlaveServerTcp]状态：启动中...");
-
-            _ctsTcpListenTask = new CancellationTokenSource();
-            _tcpListener = new TcpListener(System.Net.IPAddress.Any, port);
-
-            var factory = new NModbus.ModbusFactory();
-            _slaveNetwork = factory.CreateSlaveNetwork(_tcpListener);//创建Modbus TCP Slave网络
-
-            //var dataStore = new NModbus.Data.DefaultSlaveDataStore();//创建默认数据存储
-            //dataStore.HoldingRegisters.WritePoints(0, new ushort[] { 123, 456 });//自定义数据存储-寄存器值
-            //dataStore.CoilDiscretes.WritePoints(0, new[] { true, false, true });//自定义数据存储-预设线圈
-            var dataStore = new EventDrivenDataStore();//数据存储
-            dataStore.CoilDiscretes.StorageOperationOccurred += (sender, args) => OutputSlaveServerTcpStatus($"[{args.Operation} 线圈]: 起始地址:{args.StartingAddress} 数量:{args.NumberOfPoints} 值:[{string.Join(", ", args.Points)}]");
-            dataStore.CoilInputs.StorageOperationOccurred += (sender, args) => OutputSlaveServerTcpStatus($"[{args.Operation} 离散输入]: 起始地址:{args.StartingAddress} 值:[{string.Join(", ", args.Points)}]");
-            dataStore.InputRegisters.StorageOperationOccurred += (sender, args) => OutputSlaveServerTcpStatus($"[{args.Operation} 输入寄存器]: 起始地址:{args.StartingAddress} 值:[{string.Join(", ", args.Points)}]");
-            dataStore.HoldingRegisters.StorageOperationOccurred += (sender, args) => OutputSlaveServerTcpStatus($"[{args.Operation} 保持寄存器]: 起始地址:{args.StartingAddress} 数量:{args.NumberOfPoints} 值:[{string.Join(", ", args.Points)}]");
-
-            var slave = factory.CreateSlave(slaveId, dataStore);//创建Slave（指定站号+数据存储）
-            _slaveNetwork.AddSlave(slave);//将Slave添加到网络中
-            _tcpListener.Start();
-            _ctsTcpListenTask.Token.Register(() => _tcpListener.Stop());
-            statusSlaveServerTcp.Text = $"状态：Modbus TCP 从站监听端口 {port}";
-            WriteLog($"[statusSlaveServerTcp]状态：Modbus TCP 从站监听端口 {port}");
-            _tcpListenTask = Task.Run(async () =>
-            {
-                try
-                {
-                    await Task.Delay(500);
-                    await _slaveNetwork.ListenAsync();
-                    OutputSlaveServerTcpStatus($"状态：Modbus TCP 从站监听端口 {port}，已启动");
-                }
-                catch (ObjectDisposedException)
-                {
-                    // 正常停止导致的对象释放，忽略
-                }
-                catch (SocketException ex) when (ex.SocketErrorCode == SocketError.Interrupted)
-                {
-                    // 取消监听导致的中断，忽略
-                }
-                catch (Exception ex)
-                {
-                    //OnLog?.Invoke($"监听异常: {ex.Message}");
-                }
-            }, _ctsTcpListenTask.Token);
         }
         #endregion
 

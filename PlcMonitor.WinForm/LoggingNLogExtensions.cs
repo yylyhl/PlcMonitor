@@ -75,7 +75,7 @@ namespace PlcMonitor.WinForm
                 MaxArchiveFiles = 300,
                 MaxArchiveDays = 30,
                 ArchiveAboveSize = 1024 * 1024 * 10,
-                Layout = "${time} [${level:uppercase=true}] Thread:${threadid} ${logger}: ${message} ${exception:format=tostring}"
+                Layout = "${time} [${level:uppercase=true}] Thread:${threadid} ${logger}: ${message} ${exception}"
             };
             var errorFileTargetAsync = new AsyncTargetWrapper(errorFileTarget)
             {
@@ -100,7 +100,7 @@ namespace PlcMonitor.WinForm
                 MaxArchiveFiles = 300,
                 MaxArchiveDays = 30,
                 ArchiveAboveSize = 1024 * 1024 * 10,
-                Layout = "${time} [${level:uppercase=true}] Thread:${threadid} ${logger}: ${message} ${exception:format=tostring}"
+                Layout = "${time} [${level:uppercase=true}] Thread:${threadid} ${logger}: ${message}"
             };
             var warnFileTargetAsync = new AsyncTargetWrapper(warnFileTarget)
             {
@@ -125,7 +125,7 @@ namespace PlcMonitor.WinForm
                 ArchiveAboveSize = 1024 * 1024 * 10,
                 MaxArchiveFiles = 300,
                 MaxArchiveDays = 30,
-                Layout = "${time} [${level:uppercase=true}] Thread:${threadid} ${logger}: ${message} ${exception:format=tostring}"
+                Layout = "${time} [${level:uppercase=true}] Thread:${threadid} ${message}"
             };
             var fileTargetAsync = new AsyncTargetWrapper(fileTarget)
             {

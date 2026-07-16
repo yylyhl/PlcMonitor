@@ -378,7 +378,7 @@
             txtConnectS7Host.PlaceholderText = "host";
             txtConnectS7Host.Size = new Size(97, 23);
             txtConnectS7Host.TabIndex = 3;
-            txtConnectS7Host.Text = "127.110.110.111";
+            txtConnectS7Host.Text = "127.0.0.1";
             // 
             // comboBoxConnectS7CpuType
             // 

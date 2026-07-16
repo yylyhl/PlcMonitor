@@ -61,8 +61,8 @@ namespace PlcMonitor.WinForm
                     buffered: true,
                     flushToDiskInterval: TimeSpan.FromSeconds(2),
                     encoding: new System.Text.UTF8Encoding(encoderShouldEmitUTF8Identifier: true),
-                    //outputTemplate: "{Timestamp:HH:mm:ss.fff} [{TraceId}] [{Level:u3}] Thread:{ThreadId} {SourceContext}: {Properties} {Message}{NewLine}{Exception}"
-                    outputTemplate: "{Timestamp:HH:mm:ss.fff} [{Level:u3}] Thread:{ThreadId} {SourceContext}: {Properties} {Message}{NewLine}{Exception}"
+                    //outputTemplate: "{Timestamp:HH:mm:ss.fff} [{TraceId}] [{Level:u3}] Thread:{ThreadId} {SourceContext}: {Properties} {Message}"
+                    outputTemplate: "{Timestamp:HH:mm:ss.fff} [{Level:u3}] Thread:{ThreadId} {SourceContext}: {Properties} {Message}"
                 ).Filter.ByIncludingOnly(e => e.Level == LogEventLevel.Warning))
                 .WriteTo.Async(a => a.File(
                     //formatter: new Serilog.Formatting.Json.JsonFormatter(),
@@ -76,7 +76,7 @@ namespace PlcMonitor.WinForm
                     flushToDiskInterval: TimeSpan.FromSeconds(2),
                     encoding: new System.Text.UTF8Encoding(encoderShouldEmitUTF8Identifier: true),
                     //outputTemplate: "{Timestamp:HH:mm:ss.fff} [{TraceId}] [{Level:u3}] Thread:{ThreadId} {SourceContext}: {Message}{NewLine}{Exception}"
-                    outputTemplate: "{Timestamp:HH:mm:ss.fff} [{Level:u3}] Thread:{ThreadId} {SourceContext}: {Message}{NewLine}{Exception}"
+                    outputTemplate: "{Timestamp:HH:mm:ss.fff} [{Level:u3}] Thread:{ThreadId} {Message}"
                 ));
         }
         private static LoggerConfiguration DefaultConfig2()
@@ -113,8 +113,8 @@ namespace PlcMonitor.WinForm
                         buffered: true,
                         flushToDiskInterval: TimeSpan.FromSeconds(2),
                         encoding: new System.Text.UTF8Encoding(encoderShouldEmitUTF8Identifier: true),
-                        //outputTemplate: "{Timestamp:HH:mm:ss.fff} [{TraceId}] [{Level:u3}] Thread:{ThreadId} {SourceContext}: {Properties} {Message}{NewLine}{Exception}"
-                        outputTemplate: "{Timestamp:HH:mm:ss.fff} [{Level:u3}] Thread:{ThreadId} {SourceContext}: {Properties} {Message}{NewLine}{Exception}"
+                        //outputTemplate: "{Timestamp:HH:mm:ss.fff} [{TraceId}] [{Level:u3}] Thread:{ThreadId} {SourceContext}: {Properties} {Message}"
+                        outputTemplate: "{Timestamp:HH:mm:ss.fff} [{Level:u3}] Thread:{ThreadId} {SourceContext}: {Properties} {Message}"
                     ).Filter.ByIncludingOnly(e => e.Level == LogEventLevel.Warning);
                 }).WriteTo.Async(a => a.File(
                     //formatter: new Serilog.Formatting.Json.JsonFormatter(),
@@ -128,7 +128,7 @@ namespace PlcMonitor.WinForm
                     flushToDiskInterval: TimeSpan.FromSeconds(2),
                     encoding: new System.Text.UTF8Encoding(encoderShouldEmitUTF8Identifier: true),
                     //outputTemplate: "{Timestamp:HH:mm:ss.fff} [{TraceId}] [{Level:u3}] Thread:{ThreadId} {SourceContext}: {Properties} {Message}{NewLine}{Exception}"
-                    outputTemplate: "{Timestamp:HH:mm:ss.fff} [{Level:u3}] Thread:{ThreadId} {SourceContext}: {Properties} {Message}{NewLine}{Exception}"
+                    outputTemplate: "{Timestamp:HH:mm:ss.fff} [{Level:u3}] Thread:{ThreadId} {Message}"
                 ));
         }
 

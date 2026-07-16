@@ -22,7 +22,7 @@
           "openFileFlushTimeout": 2,
           "openFileCacheTimeout": 60,
           "bufferSize": 32768,
-          "layout": "${time} [${level:uppercase=true}] Thread:${threadid} ${logger}: ${message} ${exception:format=tostring}"
+          "layout": "${time} [${level:uppercase=true}] Thread:${threadid} ${logger}: ${message} ${exception}"
         }
       },
       "warnAsync": {
@@ -43,7 +43,7 @@
           "openFileFlushTimeout": 2,
           "openFileCacheTimeout": 60,
           "bufferSize": 32768,
-          "layout": "${time} [${level:uppercase=true}] Thread:${threadid} ${logger}: ${message} ${exception:format=tostring}"
+          "layout": "${time} [${level:uppercase=true}] Thread:${threadid} ${logger}: ${message}"
         }
       },
       "fileAsync": {
@@ -64,7 +64,7 @@
           "openFileFlushTimeout": 2,
           "openFileCacheTimeout": 60,
           "bufferSize": 32768,
-          "layout": "${time} [${level:uppercase=true}] Thread:${threadid} ${logger}: ${message} ${exception:format=tostring}"
+          "layout": "${time} [${level:uppercase=true}] Thread:${threadid}: ${message}"
         }
       },
       "consoleAsync": {

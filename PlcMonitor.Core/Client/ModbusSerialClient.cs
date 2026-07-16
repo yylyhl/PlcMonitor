@@ -125,6 +125,7 @@ namespace PlcMonitor.Core
                 }
                 IsConnected = true;
                 OnConnectionStateChanged?.Invoke();
+                await StartHeartBeat(DeviceInfo.SlaveId);
                 //var modbusData = await ReadAsync("HR4", DataPointType.Float);
                 //if (!modbusData.Success) throw new Exception("连接失败。。。");
                 return CommunicationResult<bool>.Ok(true);
