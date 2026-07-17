@@ -1,6 +1,5 @@
 using Microsoft.Extensions.Logging;
 using PlcMonitor.Core;
-using System.Net.Sockets;
 
 namespace PlcMonitor.WinForm
 {
@@ -66,7 +65,7 @@ namespace PlcMonitor.WinForm
         {
             if (!_modbusTcpClient.IsConnected) return;
             await _modbusTcpClient.DisconnectAsync();
-            await Task.Delay(1500);
+            await Task.Delay(100);
             DisconnectTcp();
         }
         private async void DisconnectTcp()
@@ -117,7 +116,7 @@ namespace PlcMonitor.WinForm
                 {
                     if (!_modbusTcpClient.IsConnected)
                     {
-                        await Task.Delay(500);
+                        await Task.Delay(100);
                         if (!btnConnectTcp.Enabled) this.Invoke(() => DisconnectTcp());
                         break;
                     }

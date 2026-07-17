@@ -34,7 +34,7 @@ namespace PlcMonitor.Core
         {
             if (!_isRunning) return;
             _cts?.Cancel();
-            _heartBeatTask?.Wait(700);
+            if (_heartBeatTask.IsCanceled) _heartBeatTask?.Wait(700);
             _cts?.Dispose();
             _isRunning = false;
             _slaveFailCount = 0;
