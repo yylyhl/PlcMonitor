@@ -12,6 +12,8 @@ namespace PlcMonitor.WinForm
         [STAThread]
         static void Main()
         {
+            NLog.Common.InternalLogger.LogLevel = NLog.LogLevel.Debug;
+            NLog.Common.InternalLogger.LogFile = @"D:\nuget\nlog-early.log";
             // To customize application configuration such as set high DPI settings or default font,
             // see https://aka.ms/applicationconfiguration.
             ApplicationConfiguration.Initialize();
@@ -19,7 +21,7 @@ namespace PlcMonitor.WinForm
 
             var configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("serilog.json", optional: false, reloadOnChange: true)
+                .AddJsonFile("serilog.json", optional: true, reloadOnChange: true)
                 .AddJsonFile("nlog.json", optional: true, reloadOnChange: true)
                 .Build();
 

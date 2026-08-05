@@ -25,6 +25,7 @@ namespace PlcMonitor.WinForm
             _timer = new System.Windows.Forms.Timer();
             _timer.Tick += Timer_Tick;
             //ftimer.Start();
+            _logger.LogInformation("MainForm init done");
             _logger.LogWarning("MainForm init done");
             WriteTxtComLog("MainForm init done");
         }
