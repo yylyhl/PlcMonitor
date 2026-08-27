@@ -56,6 +56,10 @@
             groupBox1 = new GroupBox();
             groupBox2 = new GroupBox();
             groupBox3 = new GroupBox();
+            btnConnectOpcUa = new Button();
+            btnDisconnectOpcUa = new Button();
+            txtConnectOpcUaHost = new TextBox();
+            statusMasterOpcUa = new Label();
             groupBox4 = new GroupBox();
             btnConnectS7 = new Button();
             btnDisconnectS7 = new Button();
@@ -67,6 +71,7 @@
             txtConnectS7Port = new TextBox();
             groupBox1.SuspendLayout();
             groupBox2.SuspendLayout();
+            groupBox3.SuspendLayout();
             groupBox4.SuspendLayout();
             SuspendLayout();
             // 
@@ -329,12 +334,52 @@
             // 
             // groupBox3
             // 
+            groupBox3.Controls.Add(btnConnectOpcUa);
+            groupBox3.Controls.Add(btnDisconnectOpcUa);
+            groupBox3.Controls.Add(txtConnectOpcUaHost);
+            groupBox3.Controls.Add(statusMasterOpcUa);
             groupBox3.Location = new Point(12, 685);
             groupBox3.Name = "groupBox3";
             groupBox3.Size = new Size(445, 149);
             groupBox3.TabIndex = 8;
             groupBox3.TabStop = false;
             groupBox3.Text = "OPC UA";
+            // 
+            // btnConnectOpcUa
+            // 
+            btnConnectOpcUa.Location = new Point(11, 22);
+            btnConnectOpcUa.Name = "btnConnectOpcUa";
+            btnConnectOpcUa.Size = new Size(161, 35);
+            btnConnectOpcUa.TabIndex = 0;
+            btnConnectOpcUa.Text = "连接OPC Ua";
+            btnConnectOpcUa.UseVisualStyleBackColor = true;
+            // 
+            // btnDisconnectOpcUa
+            // 
+            btnDisconnectOpcUa.Location = new Point(11, 88);
+            btnDisconnectOpcUa.Name = "btnDisconnectOpcUa";
+            btnDisconnectOpcUa.Size = new Size(161, 35);
+            btnDisconnectOpcUa.TabIndex = 0;
+            btnDisconnectOpcUa.Text = "断开OPC Ua";
+            btnDisconnectOpcUa.UseVisualStyleBackColor = true;
+            // 
+            // txtConnectOpcUaHost
+            // 
+            txtConnectOpcUaHost.Location = new Point(189, 28);
+            txtConnectOpcUaHost.Name = "txtConnectOpcUaHost";
+            txtConnectOpcUaHost.PlaceholderText = "host";
+            txtConnectOpcUaHost.Size = new Size(97, 23);
+            txtConnectOpcUaHost.TabIndex = 3;
+            txtConnectOpcUaHost.Text = "opc.tcp://pcsy.lan:53530/OPCUA/SimulationServer";
+            // 
+            // statusMasterOpcUa
+            // 
+            statusMasterOpcUa.AutoSize = true;
+            statusMasterOpcUa.Location = new Point(189, 67);
+            statusMasterOpcUa.Name = "statusMasterOpcUa";
+            statusMasterOpcUa.Size = new Size(127, 17);
+            statusMasterOpcUa.TabIndex = 2;
+            statusMasterOpcUa.Text = "statusMasterUPC Ua";
             // 
             // groupBox4
             // 
@@ -442,6 +487,8 @@
             groupBox1.PerformLayout();
             groupBox2.ResumeLayout(false);
             groupBox2.PerformLayout();
+            groupBox3.ResumeLayout(false);
+            groupBox3.PerformLayout();
             groupBox4.ResumeLayout(false);
             groupBox4.PerformLayout();
             ResumeLayout(false);
@@ -486,5 +533,9 @@
         private Label statusMasterS7;
         private ComboBox comboBoxConnectS7CpuType;
         private TextBox txtConnectS7Port;
+        private Button btnConnectOpcUa;
+        private Button btnDisconnectOpcUa;
+        private Label statusMasterOpcUa;
+        private TextBox txtConnectOpcUaHost;
     }
 }

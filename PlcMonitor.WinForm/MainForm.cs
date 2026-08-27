@@ -21,6 +21,7 @@ namespace PlcMonitor.WinForm
             InitControlsS7Master();
             InitControlsModbusSlaveTcp();
             InitControlsModbusSlaveSerialPort();
+            InitControlsOpcUaMaster();
 
             _timer = new System.Windows.Forms.Timer();
             _timer.Tick += Timer_Tick;
@@ -524,6 +525,90 @@ namespace PlcMonitor.WinForm
                 WriteLog($"[statusSlaveServerSerial]程序已退出，运行错误: {ex.Message}");
                 await _modbusSerialSlave.StopAsync();
             }
+        }
+        #endregion
+
+        #region OpcUa Master
+        private void InitControlsOpcUaMaster()
+        {
+            btnConnectOpcUa.Click += btnConnectOpcUa_Click;
+            btnDisconnectOpcUa.Click += btnDisconnectOpcUa_Click;
+        }
+        OpcUaClient _OpcUaClient;
+        private Opc.Ua.Client.Subscription? _subscription;
+        private async void btnDisconnectOpcUa_Click(object sender, EventArgs e)
+        {
+            if (!_OpcUaClient.IsConnected) return;
+            await _OpcUaClient.DisconnectAsync();
+            await Task.Delay(1500);
+            if (btnConnectOpcUa.Enabled) return;
+            DisconnectOpcUa();
+        }
+        private async void DisconnectOpcUa()
+        {
+            btnConnectOpcUa.Enabled = true;
+            txtConnectOpcUaHost.Enabled = true;
+            statusMasterOpcUa.Text = $"状态：已断开连接";
+            WriteLog($"[statusMasterOpcUa]状态：已断开连接");
+        }
+        private async void btnConnectOpcUa_Click(object sender, EventArgs e)
+        {
+            if (_OpcUaClient != null && _OpcUaClient.IsConnected)
+            {
+                MessageBox.Show("已连接", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+            var slaveHost = txtConnectOpcUaHost.Text ?? "opc.tcp://pcsy.lan:53530/OPCUA/SimulationServer";
+            txtConnectOpcUaHost.Enabled = false;
+            statusMasterOpcUa.Text = "状态：连接中...";
+            WriteLog($"[statusMasterOpcUa]状态：连接中...");
+            var device = new Device
+            {
+                DeviceType = DeviceType.OpcUa,
+                IpAddress = slaveHost,
+                OpcUserName = string.Empty,
+                OpcPassword = string.Empty,
+                OpcEndpointUrl = slaveHost
+            };
+            _OpcUaClient = new OpcUaClient(device);
+            var ress = await _OpcUaClient.ConnectAsync();
+            if (!ress.Success || !_OpcUaClient.IsConnected)
+            {
+                btnConnectOpcUa.Enabled = true;
+                txtConnectOpcUaHost.Enabled = true;
+                statusMasterOpcUa.Text = $"状态：[{ress.ErrorMessage}]";
+                WriteLog($"[statusMasterOpcUa]状态：[{ress.ErrorMessage}]");
+                return;
+            }
+            statusMasterOpcUa.Text = "状态：已连接";
+            WriteLog($"[statusMasterOpcUa]状态：已连接");
+            await Task.Delay(500);
+            var nodes = await _OpcUaClient.BrowseAsync();
+            WriteLog($"根目录节点数: {nodes.Count}");
+            foreach (var n in nodes.Take(5))
+            {
+                WriteLog($"[statusMasterOpcUa]  - {n.DisplayName} ({n.NodeId})");
+            }
+            _subscription = await _OpcUaClient.SubscribeAsync($"ns=2;s=Simulation.Temperature", (id, val, status) => WriteLog($"📥 [{id}] = {val} ({status})"), publishingInterval: 1000);
+            _ = Task.Run(async () =>
+            {
+                while (true)
+                {
+                    if (!ress.Success || !_OpcUaClient.IsConnected)
+                    {
+                        this.Invoke(() => DisconnectOpcUa());
+                        break;
+                    }
+                    string nodeId = $"ns={_random.Next(1, 9)};s=Simulation.Temperature";
+                    var readData = await _OpcUaClient.ReadAsync(nodeId, DataPointType.Float);
+                    this.Invoke((Delegate)(() =>
+                    {
+                        statusMasterOpcUa.Text = $"data：[read={(readData.Success ? readData.Data : readData.ErrorMessage)}]";
+                        WriteLog($"[statusMasterOpcUa]data：[read={(readData.Success ? readData.Data : readData.ErrorMessage)}]");
+                    }));
+                    Thread.Sleep(1000);
+                }
+            });
         }
         #endregion
     }
