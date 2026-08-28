@@ -1,0 +1,87 @@
+﻿<Window x:Class="PlcMonitor.Wpf.Window1"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:PlcMonitor.Wpf"
+        xmlns:controls="clr-namespace:PlcMonitor.Wpf"
+        mc:Ignorable="d"
+        Title="Window1" Height="450" Width="800" 
+        WindowStyle="None"
+        AllowsTransparency="True"
+        ResizeMode="CanResizeWithGrip">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!-- 使用自定义标题栏 -->
+        <controls:TitleBarControl x:Name="TitleBar"
+                                 Title="工业控制系统 v3.0"
+                                 TitleBarBackground="#2D2D2D" />
+
+        <!-- 内容区域 -->
+        <Border Grid.Row="1" Background="#1E1E1E">
+            <Grid Margin="10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*" />
+                    <ColumnDefinition Width="3*" />
+                </Grid.ColumnDefinitions>
+
+                <!-- 左侧控制区 -->
+                <Border Grid.Column="0"
+                        Background="#383838"
+                        CornerRadius="8"
+                        Padding="10">
+                    <StackPanel>
+                        <TextBlock Text="设备参数"
+                                   Foreground="White"
+                                   FontSize="16"
+                                   FontWeight="Bold"
+                                   Margin="0,0,0,15"/>
+
+                        <TextBlock Text="IP地址" Foreground="#CCCCCC"/>
+                        <TextBox Height="28" Margin="0,3,0,10"
+                                 Background="#2D2D2D"
+                                 Foreground="White"
+                                 BorderBrush="#555555"/>
+
+                        <TextBlock Text="端口" Foreground="#CCCCCC"/>
+                        <TextBox Height="28" Margin="0,3,0,10"
+                                 Background="#2D2D2D"
+                                 Foreground="White"
+                                 BorderBrush="#555555"/>
+
+                        <Button Content="连接设备"
+                                Height="36"
+                                Background="#007ACC"
+                                Foreground="White"
+                                BorderThickness="0"
+                                Margin="0,10,0,0"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- 右侧日志区 -->
+                <Border Grid.Column="1"
+                        Background="#252526"
+                        CornerRadius="8"
+                        Margin="10,0,0,0"
+                        Padding="10">
+                    <TextBox Background="Transparent"
+                             Foreground="#4EC9B0"
+                             FontFamily="Consolas"
+                             FontSize="12"
+                             IsReadOnly="True"
+                             VerticalScrollBarVisibility="Auto"
+                             TextWrapping="Wrap"
+                             BorderThickness="0">
+                        09:30:21.456  系统启动完成
+                        09:30:22.103  正在连接 PLC...
+                        09:30:23.789  连接成功 [192.168.1.100:502]
+                    </TextBox>
+                </Border>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>
