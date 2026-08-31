@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:PlcMonitor.Wpf"
         mc:Ignorable="d"
         Title="PLC Monitor" 
-        Height="630" Width="900" 
+        Height="680" Width="900" 
         WindowStyle="None" ResizeMode="CanResizeWithGrip" AllowsTransparency="true" Background="Transparent">
     
     <Window.Resources>
@@ -32,7 +32,7 @@
             <Style.Triggers>
                 <!-- 当按钮禁用时 -->
                 <Trigger Property="IsEnabled" Value="False">
-                    <Setter Property="Background" Value="Gray"/>
+                    <Setter Property="Background" Value="#c0c0c0"/>
                     <Setter Property="Foreground" Value="DarkGray"/>
                     <Setter Property="BorderBrush" Value="LightGray"/>
                 </Trigger>
@@ -131,27 +131,25 @@
                                     <StackPanel Orientation="Horizontal" Margin="0,10">
                                         <StackPanel Orientation="Vertical" Margin="5,0">
                                             <Button Content="连接Slave-Tcp" 
-                            Name="btnConnectTcp" 
-                            Command="{Binding ConnectTcpCommand}" 
-                            IsEnabled="{Binding ConnectTcpBtnStatus}" 
-                            Style="{StaticResource CustomButtonStyle}" 
-                            Width="150" Margin="0,5"/>
+                                                Command="{Binding ConnectTcpCommand}" 
+                                                IsEnabled="{Binding ConnectTcpBtnStatus}" 
+                                                Style="{StaticResource CustomButtonStyle}" 
+                                                Width="150" Margin="0,5"/>
                                             <Button Content="断开Slave-Tcp" 
-                            Name="btnDisconnectTcp" 
-                            Command="{Binding DisconnectTcpCommand}" 
-                            IsEnabled="{Binding DisconnectTcpBtnStatus}" 
-                            Style="{StaticResource CustomButtonStyle}" 
-                            Width="150" Margin="0,5"/>
+                                                Command="{Binding DisconnectTcpCommand}" 
+                                                IsEnabled="{Binding DisconnectTcpBtnStatus}" 
+                                                Style="{StaticResource CustomButtonStyle}" 
+                                                Width="150" Margin="0,5"/>
                                         </StackPanel>
                                         <StackPanel Orientation="Horizontal" Margin="5,0">
                                             <StackPanel Orientation="Vertical">
-                                                <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                                                    <TextBox Text="1" Width="20" Margin="5,0"/>
-                                                    <TextBox Text="127.0.0.1" Width="100" Margin="5,0"/>
-                                                    <TextBox Text="502" Width="40" Margin="5,0"/>
+                                                <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                                                    <TextBox Height="28" VerticalContentAlignment="Center" Width="20" Margin="5,0" Text="{Binding SlaveId}" />
+                                                    <TextBox Height="28" VerticalContentAlignment="Center" Width="100" Margin="5,0" Text="{Binding SlaveAddress}"/>
+                                                    <TextBox Height="28" VerticalContentAlignment="Center" Width="40" Margin="5,0" Text="{Binding SlavePort}"/>
                                                 </StackPanel>
-                                                <StackPanel Orientation="Horizontal" Margin="5,15,0,0">
-                                                    <TextBlock Text="{Binding StatusMasterTcp}" FontSize="12"/>
+                                                <StackPanel Orientation="Horizontal" Margin="5,20,0,0">
+                                                    <TextBlock Text="{Binding StatusMasterTcp}"/>
                                                 </StackPanel>
                                             </StackPanel>
                                         </StackPanel>
@@ -298,7 +296,13 @@
                     </Border>
 
                     <Border Grid.Column="1" Background="Black" Padding="5">
-                        <TextBox x:Name="TxtLog"
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="5*" />
+                                <ColumnDefinition Width="5*" />
+                            </Grid.ColumnDefinitions>
+                            <TextBox Grid.Column="0" Text="{Binding CommonLog}" 
+                                 local:TextBoxBehavior.AutoScrollToEnd="True"
                              Style="{StaticResource LogTextBoxStyle}"
                              TextWrapping="Wrap"
                              IsReadOnly="True"
@@ -309,6 +313,37 @@
                              FontSize="13"
                              Background="Black"
                              BorderThickness="1" />
+
+                            <ListView Grid.Column="1" ItemsSource="{Binding CommonLogArray}" 
+                                      VirtualizingPanel.IsVirtualizing="True" 
+                                      VirtualizingPanel.VirtualizationMode="Recycling" 
+                                      ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                      local:ListBehavior.AutoScrollToEnd="True"
+                                  Margin="0,0,0,0" 
+                                  Background="Black" 
+                                  Foreground="#ffffff"
+                                  FontFamily="Consolas"
+                                  FontSize="13"
+                                  BorderThickness="1">
+                                <!--<ListView.View>
+                                    <GridView>
+                                        <GridViewColumn Header="时间" Width="150" DisplayMemberBinding="{Binding Timestamp}" />
+                                        <GridViewColumn Header="日志内容" Width="Auto" DisplayMemberBinding="{Binding Message}" />
+                                    </GridView>
+                                </ListView.View>-->
+                                <ListView.ItemContainerStyle>
+                                    <Style TargetType="ListViewItem">
+                                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                        <Setter Property="IsHitTestVisible" Value="False"/>
+                                    </Style>
+                                </ListView.ItemContainerStyle>
+                                <ListView.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding}" TextWrapping="Wrap" />
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                            </ListView>
+                        </Grid>
                     </Border>
 
                 </Grid>
