@@ -10,9 +10,23 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="xuu0w-01fvm-001.ico">
+    <None Remove="Asset\starry-sky-2051448_1280.jpg" />
+    <None Remove="Asset\xuu0w-01fvm-001.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Asset\starry-sky-2051448_1280.jpg" />
+    <Resource Include="Asset\xuu0w-01fvm-001.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="C:\Users\yylyh\Downloads\starry-sky-2051448_1280.jpg" Link="Asset\starry-sky-2051448_1280.jpg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="xuu0w-01fvm-001.ico">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </EmbeddedResource>
+    </Resource>
   </ItemGroup>
 
   <ItemGroup>

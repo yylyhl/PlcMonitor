@@ -13,11 +13,11 @@ using System.Windows.Shapes;
 namespace PlcMonitor.Wpf
 {
     /// <summary>
-    /// Window1.xaml 的交互逻辑
+    /// MainWindow1.xaml 的交互逻辑
     /// </summary>
-    public partial class Window1 : Window
+    public partial class MainWindow1 : Window
     {
-        public Window1()
+        public MainWindow1()
         {
             InitializeComponent();
         }

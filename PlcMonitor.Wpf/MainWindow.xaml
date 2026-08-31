@@ -299,16 +299,16 @@
 
                     <Border Grid.Column="1" Background="Black" Padding="5">
                         <TextBox x:Name="TxtLog"
-             Style="{StaticResource LogTextBoxStyle}"
-             TextWrapping="Wrap"
-             IsReadOnly="True"
-             VerticalScrollBarVisibility="Auto"
-             HorizontalScrollBarVisibility="Auto"
-             Foreground="#ffffff"
-             FontFamily="Consolas"
-             FontSize="13"
-             Background="Black"
-             BorderThickness="0" />
+                             Style="{StaticResource LogTextBoxStyle}"
+                             TextWrapping="Wrap"
+                             IsReadOnly="True"
+                             VerticalScrollBarVisibility="Auto"
+                             HorizontalScrollBarVisibility="Auto"
+                             Foreground="#ffffff"
+                             FontFamily="Consolas"
+                             FontSize="13"
+                             Background="Black"
+                             BorderThickness="1" />
                     </Border>
 
                 </Grid>

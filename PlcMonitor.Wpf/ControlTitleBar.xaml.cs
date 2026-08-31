@@ -1,19 +1,17 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Interop;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 
 namespace PlcMonitor.Wpf
 {
     /// <summary>
     /// TitleBarControl.xaml 的交互逻辑
     /// </summary>
-    public partial class TitleBarControl : UserControl
+    public partial class ControlTitleBar : UserControl
     {
 
-        public TitleBarControl()
+        public ControlTitleBar()
         {
             InitializeComponent();
             // 监听依赖属性变化，同步到UI
@@ -42,7 +40,7 @@ namespace PlcMonitor.Wpf
             get => (string)GetValue(TitleProperty);
             set => SetValue(TitleProperty, value);
         }
-        public static readonly DependencyProperty TitleProperty = DependencyProperty.Register(nameof(Title), typeof(string), typeof(TitleBarControl), new PropertyMetadata("应用程序"));
+        public static readonly DependencyProperty TitleProperty = DependencyProperty.Register(nameof(Title), typeof(string), typeof(ControlTitleBar), new PropertyMetadata("应用程序"));
 
         /// <summary>标题栏背景色</summary>
         public Brush TitleBarBackground
@@ -50,7 +48,7 @@ namespace PlcMonitor.Wpf
             get => (Brush)GetValue(TitleBarBackgroundProperty);
             set => SetValue(TitleBarBackgroundProperty, value);
         }
-        public static readonly DependencyProperty TitleBarBackgroundProperty = DependencyProperty.Register(nameof(TitleBarBackground), typeof(Brush), typeof(TitleBarControl), new PropertyMetadata(new SolidColorBrush(Color.FromRgb(45, 45, 55))));
+        public static readonly DependencyProperty TitleBarBackgroundProperty = DependencyProperty.Register(nameof(TitleBarBackground), typeof(Brush), typeof(ControlTitleBar), new PropertyMetadata(new SolidColorBrush(Color.FromRgb(45, 45, 55))));
 
         /// <summary></summary>
         public ImageSource IconSource
@@ -58,10 +56,10 @@ namespace PlcMonitor.Wpf
             get => (ImageSource)GetValue(IconSourceProperty);
             set => SetValue(IconSourceProperty, value);
         }
-        public static readonly DependencyProperty IconSourceProperty = DependencyProperty.Register(nameof(IconSource), typeof(ImageSource), typeof(TitleBarControl), new PropertyMetadata(null, OnIconChanged));
+        public static readonly DependencyProperty IconSourceProperty = DependencyProperty.Register(nameof(IconSource), typeof(ImageSource), typeof(ControlTitleBar), new PropertyMetadata(null, OnIconChanged));
         private static void OnIconChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            if (d is TitleBarControl bar && bar.IconImage != null)
+            if (d is ControlTitleBar bar && bar.IconImage != null)
             {
                 bar.IconImage.Source = e.NewValue as ImageSource;
                 bar.IconImage.Visibility = e.NewValue != null ? Visibility.Visible : Visibility.Collapsed;
