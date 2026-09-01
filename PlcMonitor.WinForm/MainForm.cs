@@ -377,7 +377,6 @@ namespace PlcMonitor.WinForm
             WriteLog($"[statusSlaveServerTcp]状态：启动中...");
             var device = new Device() { IpAddress = "127.0.0.1", Port = port, DeviceType = DeviceType.ModbusTcp };
             _modbusTcpSlave = CommunicationServerFactory.CreateServer(device);
-            _modbusTcpSlave = CommunicationServerFactory.CreateServer(device);
             if (!_modbusTcpSlave.AddSlave(slaveId, out var msg))
             {
                 MessageBox.Show(msg, "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);

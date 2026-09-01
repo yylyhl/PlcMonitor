@@ -368,7 +368,7 @@
             txtConnectOpcUaHost.Location = new Point(189, 28);
             txtConnectOpcUaHost.Name = "txtConnectOpcUaHost";
             txtConnectOpcUaHost.PlaceholderText = "host";
-            txtConnectOpcUaHost.Size = new Size(97, 23);
+            txtConnectOpcUaHost.Size = new Size(214, 23);
             txtConnectOpcUaHost.TabIndex = 3;
             txtConnectOpcUaHost.Text = "opc.tcp://pcsy.lan:53530/OPCUA/SimulationServer";
             // 
