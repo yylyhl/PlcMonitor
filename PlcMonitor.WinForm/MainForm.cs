@@ -314,6 +314,7 @@ namespace PlcMonitor.WinForm
             //_timer.Start();
             _ = Task.Run(async () =>
             {
+                var randData = _random.Next(10, 100);
                 while (true)
                 {
                     if (!_s7Client.IsConnected)
@@ -321,7 +322,6 @@ namespace PlcMonitor.WinForm
                         this.Invoke(() => DisconnectS7());
                         break;
                     }
-                    var randData = _random.Next(10, 100);
                     var writeData = await _s7Client.WriteAsync("db2.dbd4", DataPointType.Float, randData);
                     var readData = await _s7Client.ReadAsync("db2.dbx0.1", DataPointType.Float);
                     this.Invoke(() =>

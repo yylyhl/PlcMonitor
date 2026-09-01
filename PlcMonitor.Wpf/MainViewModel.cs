@@ -325,5 +325,109 @@ namespace PlcMonitor.Wpf
             }
         }
         #endregion
+        /*
+         <TextBox VerticalContentAlignment="Center" Height="28" Margin="5,0" Text="{Binding S7Slot}"/>
+        <TextBox VerticalContentAlignment="Center" Height="28" Width="100" Margin="5,0" Text="{Binding S7Host}"/>
+        <TextBox VerticalContentAlignment="Center" Height="28" Width="40" Margin="5,0" Text="{Binding S7Port}"/>
+        <ComboBox VerticalContentAlignment="Center" Height="28" Width="100" Margin="5,0" ToolTip="Protocol" ItemsSource="{Binding S7Protocols}" SelectedIndex="{Binding S7ProtocolSelected,Mode=TwoWay}">
+
+        <TextBlock Text="{Binding StatusMasterS7}" FontSize="12"/>
+         */
+
+        #region Modbus Master
+        //S7.Net.CpuType.S7200
+        private ObservableCollection<string> _s7Protocols = new(Enum.GetNames(typeof(S7.Net.CpuType)));
+        public ObservableCollection<string> S7Protocols { get => _s7Protocols; set => SetProperty(ref _s7Protocols, value); }
+        private string _s7ProtocolSelected = S7.Net.CpuType.S71200.ToString();
+        public string S7ProtocolSelected { get => _s7ProtocolSelected; set => SetProperty(ref _s7ProtocolSelected, value); }
+
+        private string _s7Slot = "1";
+        public string S7Slot { get => _s7Slot; set => SetProperty(ref _s7Slot, value); }
+
+        private string _s7Host = "127.0.0.1";
+        public string S7Host { get => _s7Host; set => SetProperty(ref _s7Host, value); }
+        private string _s7Port = "102";
+        public string S7Port { get => _s7Port; set => SetProperty(ref _s7Port, value); }
+
+        ICommunicationClient _s7Client;
+        private string _statusMasterS7 = "状态：未连接";
+        public string StatusMasterS7 { get => _statusMasterS7; set => SetProperty(ref _statusMasterS7, value); }
+        private bool _connectS7BtnStatus = true;
+        public bool ConnectS7BtnStatus { get => _connectS7BtnStatus; set => SetProperty(ref _connectS7BtnStatus, value); }
+        public ICommand ConnectS7Command => new RelayCommand(ConnectS7);
+        private bool _disconnectS7BtnStatus = false;
+        public bool DisconnectS7BtnStatus { get => _disconnectS7BtnStatus; set => SetProperty(ref _disconnectS7BtnStatus, value); }
+        public ICommand DisconnectS7Command => new RelayCommand(DisconnectS7);
+        private async void DisconnectS7()
+        {
+            if (_s7Client.IsConnected) await _s7Client.DisconnectAsync();
+            await Task.Delay(100);
+            ConnectS7BtnStatus = true;
+            DisconnectS7BtnStatus = false;
+            StatusMasterS7 = $"状态：已断开连接";
+            WriteLog($"[{nameof(StatusMasterS7)}]状态：已断开连接");
+        }
+        private async void ConnectS7()
+        {
+            if (_s7Client != null && _s7Client.IsConnected)
+            {
+                MessageBox.Show("已连接", "提示", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(S7Host) || string.IsNullOrWhiteSpace(S7Port) || string.IsNullOrWhiteSpace(S7Slot))
+            {
+                MessageBox.Show("地址/端口/插槽不正确", "提示", MessageBoxButton.OKCancel, MessageBoxImage.Warning);
+                return;
+            }
+            var slaveHost = S7Host ?? "127.0.0.1";
+            _ = int.TryParse(S7Port, out var port);
+            _ = int.TryParse(S7Slot, out var slot);
+            ConnectS7BtnStatus = false;
+            StatusMasterS7 = "状态：连接中...";
+            WriteLog($"[{nameof(StatusMasterS7)}]状态：连接中...");
+
+            var device = new Device
+            {
+                DeviceType = DeviceType.SiemensS7,
+                IpAddress = slaveHost,
+                Port = port,
+                CpuType = S7ProtocolSelected,
+                Slot = slot
+            };
+            _s7Client = CommunicationClientFactory.CreateClient(device);
+            var ress = await _s7Client.ConnectAsync();
+            if (!ress.Success)
+            {
+                ConnectS7BtnStatus = true;
+                DisconnectS7BtnStatus = false;
+                StatusMasterS7 = $"状态：[{ress.ErrorMessage}]";
+                WriteLog($"[{nameof(StatusMasterS7)}]状态：[{ress.ErrorMessage}]");
+                return;
+            }
+
+            DisconnectS7BtnStatus = true;
+            StatusMasterS7 = "状态：已连接";
+            WriteLog($"[{nameof(StatusMasterS7)}]状态：已连接");
+            _ = Task.Run(async () =>
+            {
+                var randData = _random.Next(10, 100);
+                while (true)
+                {
+                    if (!_s7Client.IsConnected)
+                    {
+                        await Task.Delay(100);
+                        if (!ConnectS7BtnStatus) DisconnectS7();
+                        break;
+                    }
+                    var writeData = await _s7Client.WriteAsync("db2.dbd4", DataPointType.Float, randData);
+                    var readData = await _s7Client.ReadAsync("db2.dbx0.1", DataPointType.Float);
+                    StatusMasterS7 = $"data：[write={(writeData.Success ? randData : writeData.ErrorMessage)}] [read={(readData.Success ? readData.Data : readData.ErrorMessage)}]";
+                    WriteLog($"[{nameof(StatusMasterS7)}]data：[write={(writeData.Success ? randData : writeData.ErrorMessage)}] [read={(readData.Success ? readData.Data : readData.ErrorMessage)}]");
+                    Thread.Sleep(1000);
+                }
+            });
+        }
+        #endregion
     }
 }

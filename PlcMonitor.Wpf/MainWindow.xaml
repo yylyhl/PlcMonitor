@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:PlcMonitor.Wpf"
         mc:Ignorable="d"
         Title="PLC Monitor" 
-        Height="680" Width="900" 
+        Height="600" Width="900" 
         WindowStyle="None" ResizeMode="CanResizeWithGrip" AllowsTransparency="true" Background="Transparent">
     
     <Window.Resources>
@@ -65,16 +65,17 @@
             <Border Grid.Row="0" Background="#F5F5F5">
                 <Grid>
                     <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="30" />
                         <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="120" />
                     </Grid.ColumnDefinitions>
-                    <Image x:Name="imgAppIcon" Width="18" Height="18" Source="/xuu0w-01fvm-001.ico" Margin="8,0"/>
-                    <TextBlock Text="PLC Monitor" 
+                    <Image Grid.Column="0" Source="xuu0w-01fvm-001.ico" Margin="8,0,5,0"/>
+                    <TextBlock Grid.Column="1" Text="PLC Monitor" 
                        Foreground="#000" 
                        FontSize="14" 
                        VerticalAlignment="Center" 
-                       Margin="10,0" MouseLeftButtonDown="TitleBar_MouseLeftButtonDown"/>
-                    <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+                       MouseLeftButtonDown="TitleBar_MouseLeftButtonDown"/>
+                    <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right">
                         <Button Width="40" Height="35" Background="#F5F5F5" BorderThickness="0" Click="MinimizeButton_Click">
                             <Path Stroke="#000" Data="M0,0 H10" StrokeThickness="1"/>
                         </Button>
@@ -217,33 +218,25 @@
                                 <StackPanel Orientation="Horizontal" Margin="0,10">
                                     <StackPanel Orientation="Vertical" Margin="5,0">
                                         <Button Content="连接S7" 
-                        Name="btnConnectS7" 
-                        Command="{Binding ConnectS7Command}" 
-                        IsEnabled="{Binding ConnectS7BtnStatus}" 
-                        Style="{StaticResource CustomButtonStyle}" 
-                        Width="150" Margin="0,5"/>
+                                            Command="{Binding ConnectS7Command}" 
+                                            IsEnabled="{Binding ConnectS7BtnStatus}" 
+                                            Style="{StaticResource CustomButtonStyle}" 
+                                            Width="150" Margin="0,5"/>
                                         <Button Content="断开S7" 
-                        Name="btnDisconnectS7" 
-                        Command="{Binding DisconnectS7Command}" 
-                        IsEnabled="{Binding DisconnectS7BtnStatus}" 
-                        Style="{StaticResource CustomButtonStyle}" 
-                        Width="150" Margin="0,5"/>
+                                            Command="{Binding DisconnectS7Command}" 
+                                            IsEnabled="{Binding DisconnectS7BtnStatus}" 
+                                            Style="{StaticResource CustomButtonStyle}" 
+                                            Width="150" Margin="0,5"/>
                                     </StackPanel>
                                     <StackPanel Orientation="Horizontal" Margin="5,0">
                                         <StackPanel Orientation="Vertical">
                                             <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                                                <TextBox VerticalContentAlignment="Center" Height="28" Text="1" Width="20" Margin="5,0"/>
-                                                <TextBox VerticalContentAlignment="Center" Height="28" Text="127.0.0.1" Width="100" Margin="5,0"/>
-                                                <TextBox VerticalContentAlignment="Center" Height="28" Text="502" Width="40" Margin="5,0"/>
-                                                <ComboBox VerticalContentAlignment="Center" Height="28" Width="100" Margin="5,0" SelectedIndex="0">
-                                                    <ComboBoxItem Content="S71500" />
-                                                    <ComboBoxItem Content="S71200" />
-                                                    <ComboBoxItem Content="S7400" />
-                                                    <ComboBoxItem Content="S7300" />
-                                                    <ComboBoxItem Content="S7200Smart" />
-                                                    <ComboBoxItem Content="Logo0BA8" />
-                                                    <ComboBoxItem Content="S7200" />
-                                                </ComboBox>
+                                                <TextBox VerticalContentAlignment="Center" Height="28" Margin="5,0" Text="{Binding S7Slot}"/>
+                                                <TextBox VerticalContentAlignment="Center" Height="28" Width="100" Margin="5,0" Text="{Binding S7Host}"/>
+                                                <TextBox VerticalContentAlignment="Center" Height="28" Width="40" Margin="5,0" Text="{Binding S7Port}"/>
+                                                <ComboBox VerticalContentAlignment="Center" Height="28" Width="100" Margin="5,0" ToolTip="Protocol" 
+                                                          ItemsSource="{Binding S7Protocols}" 
+                                                          SelectedItem="{Binding S7ProtocolSelected,Mode=TwoWay}"/>
                                             </StackPanel>
                                             <StackPanel Orientation="Horizontal" Margin="5,15,0,0">
                                                 <TextBlock Text="{Binding StatusMasterS7}" FontSize="12"/>
@@ -255,7 +248,7 @@
                         </Grid>
                     </Border>
 
-                    <Border Grid.Column="1" Background="Black" Padding="5">
+                    <Border Grid.Column="1">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="5*" />
