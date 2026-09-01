@@ -1,0 +1,167 @@
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using NLog;
+using NLog.Config;
+using NLog.Extensions.Logging;
+using NLog.Targets;
+using NLog.Targets.Wrappers;
+
+namespace PlcMonitor.Wpf
+{
+    public static class LoggingNLogExtensions
+    {
+        /// <summary>
+        /// 初始化NLog并注入DI
+        /// </summary>
+        public static ILoggingBuilder AddMonitorNLog(this ILoggingBuilder builder, IConfiguration? configuration = null)
+        {
+            string configPath = System.IO.Path.Combine(AppContext.BaseDirectory, "nlog.config");
+            if (configuration != null && System.IO.File.Exists(configPath))
+            {
+                try
+                {
+                    //LogManager.Configuration = new XmlLoggingConfiguration(configPath);//直接赋值
+                    LogManager.Setup().LoadConfigurationFromXml(configPath);//链式加载
+                }
+                catch
+                {
+                    LogManager.Configuration = DefaultConfig();
+                }
+            }
+            else
+            {
+                
+                if (configuration != null && configuration.GetSection("NLog").Exists())
+                {
+                    try
+                    {
+                        var nlogSection = configuration.GetSection("NLog");
+                        //LogManager.Configuration = new NLogLoggingConfiguration(nlogSection);//直接赋值
+                        LogManager.Setup().LoadConfigurationFromSection(configuration, "NLog");//链式加载
+                        //LogManager.Setup().LoadConfigurationFromSection(configuration);//链式加载
+                    }
+                    catch
+                    {
+                        LogManager.Configuration = DefaultConfig();
+                    }
+                }
+                else
+                {
+                    LogManager.Configuration = DefaultConfig();
+                }
+            }
+
+            //builder.ClearProviders();
+            builder.AddNLog(new NLogProviderOptions
+            {
+                //RemoveLoggerFactoryFilter = false // 读取appsettings的LogLevel覆盖规则
+            });// 桥接到Microsoft.Extensions.Logging抽象
+            return builder;
+        }
+        private static LoggingConfiguration DefaultConfig()
+        {
+            var config = new LoggingConfiguration();
+
+            // 文件滚动目标
+            var errorFileTarget = new FileTarget("error")
+            {
+                FileName = "logs/error-${shortdate}.txt",//${time} = ${date:format=HH:mm:ss.ffff}
+                AutoFlush = false,
+                KeepFileOpen = true,
+                OpenFileFlushTimeout = 2,
+                OpenFileCacheTimeout = 60,
+                BufferSize = 32768,//32kb
+                ArchiveFileName = "logs/nlog-${shortdate}.{#}.txt",
+                ArchiveEvery = FileArchivePeriod.Day,
+                MaxArchiveFiles = 300,
+                MaxArchiveDays = 30,
+                ArchiveAboveSize = 1024 * 1024 * 10,
+                Layout = "${time} [${level:uppercase=true}] Thread:${threadid} ${logger}: ${message} ${exception}"
+            };
+            var errorFileTargetAsync = new AsyncTargetWrapper(errorFileTarget)
+            {
+                QueueLimit = 10000,
+                OverflowAction = AsyncTargetWrapperOverflowAction.Discard,
+                BatchSize = 200,
+                FullBatchSizeWriteLimit = 5,
+                TimeToSleepBetweenBatches = 1,
+            };
+            config.AddTarget(errorFileTargetAsync);
+
+            var warnFileTarget = new FileTarget("warn")
+            {
+                FileName = "logs/warn-${shortdate}.txt",
+                AutoFlush = false,
+                KeepFileOpen = true,
+                OpenFileFlushTimeout = 2,
+                OpenFileCacheTimeout = 60,
+                BufferSize = 32768,//32kb
+                ArchiveFileName = "logs/nlog-${shortdate}.{#}.txt",
+                ArchiveEvery = FileArchivePeriod.Day,
+                MaxArchiveFiles = 300,
+                MaxArchiveDays = 30,
+                ArchiveAboveSize = 1024 * 1024 * 10,
+                Layout = "${time} [${level:uppercase=true}] Thread:${threadid} ${logger}: ${message}"
+            };
+            var warnFileTargetAsync = new AsyncTargetWrapper(warnFileTarget)
+            {
+                QueueLimit = 10000,
+                OverflowAction = AsyncTargetWrapperOverflowAction.Discard,
+                BatchSize = 200,
+                FullBatchSizeWriteLimit = 5,
+                TimeToSleepBetweenBatches = 1,
+            };
+            config.AddTarget(warnFileTargetAsync);
+
+            var fileTarget = new FileTarget("info")
+            {
+                FileName = "logs/nlog-${shortdate}.txt",
+                AutoFlush = false,
+                KeepFileOpen = true,
+                OpenFileFlushTimeout = 2,
+                OpenFileCacheTimeout = 60,
+                BufferSize = 32768,//32kb
+                ArchiveFileName = "logs/nlog-${shortdate}.{#}.txt",
+                ArchiveEvery = FileArchivePeriod.Day,
+                ArchiveAboveSize = 1024 * 1024 * 10,
+                MaxArchiveFiles = 300,
+                MaxArchiveDays = 30,
+                Layout = "${time} [${level:uppercase=true}] Thread:${threadid} ${message}"
+            };
+            var fileTargetAsync = new AsyncTargetWrapper(fileTarget)
+            {
+                QueueLimit = 10000,
+                OverflowAction = AsyncTargetWrapperOverflowAction.Discard,
+                BatchSize = 200,
+                FullBatchSizeWriteLimit = 5,
+                TimeToSleepBetweenBatches = 1,
+            };
+            config.AddTarget(fileTargetAsync);
+
+            var consoleTarget = new ConsoleTarget("console");
+            var consoleTargetAsync = new AsyncTargetWrapper(consoleTarget);
+            config.AddTarget(consoleTargetAsync);
+
+            #region 过滤规则放最前面，匹配后终止后续规则，等价Override抬高最低级别
+            var nullTarget = new NullTarget("null");
+            //config.AddTarget(nullTarget);
+            config.LoggingRules.Add(new LoggingRule("Microsoft.AspNetCore.*", NLog.LogLevel.Warn, nullTarget) { Final = true, FinalMinLevel = NLog.LogLevel.Warn });
+            config.LoggingRules.Add(new LoggingRule("Microsoft.Hosting.Lifetime.*", NLog.LogLevel.Info, nullTarget) { Final = true, FinalMinLevel = NLog.LogLevel.Info });
+            config.LoggingRules.Add(new LoggingRule("System.*", NLog.LogLevel.Warn, nullTarget) { Final = true, FinalMinLevel = NLog.LogLevel.Warn });
+            #endregion
+            config.AddRule(NLog.LogLevel.Error, NLog.LogLevel.Fatal, errorFileTargetAsync);
+            config.AddRule(NLog.LogLevel.Warn, NLog.LogLevel.Warn, warnFileTargetAsync);
+            config.AddRule(NLog.LogLevel.Debug, NLog.LogLevel.Fatal, fileTargetAsync);
+            config.AddRule(NLog.LogLevel.Debug, NLog.LogLevel.Fatal, consoleTargetAsync);
+            return config;
+        }
+
+        /// <summary>
+        /// 释放NLog
+        /// </summary>
+        public static void CloseNLog()
+        {
+            LogManager.Shutdown();
+        }
+    }
+}

@@ -130,58 +130,39 @@
                                 <StackPanel Orientation="Vertical">
                                     <StackPanel Orientation="Horizontal" Margin="0,10">
                                         <StackPanel Orientation="Vertical" Margin="5,0">
-                                            <Button Content="连接Slave-Tcp" 
+                                            <Button Content="连接Slave" 
                                                 Command="{Binding ConnectTcpCommand}" 
                                                 IsEnabled="{Binding ConnectTcpBtnStatus}" 
                                                 Style="{StaticResource CustomButtonStyle}" 
-                                                Width="150" Margin="0,5"/>
-                                            <Button Content="断开Slave-Tcp" 
+                                                Width="150" Margin="0,15"/>
+                                            <Button Content="断开Slave" 
                                                 Command="{Binding DisconnectTcpCommand}" 
                                                 IsEnabled="{Binding DisconnectTcpBtnStatus}" 
                                                 Style="{StaticResource CustomButtonStyle}" 
-                                                Width="150" Margin="0,5"/>
+                                                Width="150" Margin="0,15"/>
                                         </StackPanel>
                                         <StackPanel Orientation="Horizontal" Margin="5,0">
                                             <StackPanel Orientation="Vertical">
-                                                <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
-                                                    <TextBox Height="28" VerticalContentAlignment="Center" Width="20" Margin="5,0" Text="{Binding SlaveId}" />
-                                                    <TextBox Height="28" VerticalContentAlignment="Center" Width="100" Margin="5,0" Text="{Binding SlaveAddress}"/>
-                                                    <TextBox Height="28" VerticalContentAlignment="Center" Width="40" Margin="5,0" Text="{Binding SlavePort}"/>
+                                                <StackPanel Orientation="Horizontal" Background="AliceBlue" Margin="0,15,0,0">
+                                                    <ComboBox Width="100" Margin="5,0" ToolTip="connection type" SelectedIndex="{Binding ConnectionType,Mode=TwoWay}">
+                                                        <ComboBoxItem Content="TCP" />
+                                                        <ComboBoxItem Content="SerialPort" />
+                                                    </ComboBox>
+                                                    <TextBox Height="28" VerticalContentAlignment="Center" Width="20" Margin="5,0" ToolTip="Slave ID" Text="{Binding SlaveId}"/>
                                                 </StackPanel>
-                                                <StackPanel Orientation="Horizontal" Margin="5,20,0,0">
-                                                    <TextBlock Text="{Binding StatusMasterTcp}"/>
+                                                <StackPanel Orientation="Horizontal" Margin="0,5" Visibility="{Binding ConnectionTcpArgs}">
+                                                    <TextBox Height="28" VerticalContentAlignment="Center" Width="100" Margin="5,0"  ToolTip="Slave Address" Text="{Binding SlaveAddress}"/>
+                                                    <TextBox Height="28" VerticalContentAlignment="Center" Width="40" Margin="5,0" ToolTip="Slave Port" Text="{Binding SlavePort}"/>
                                                 </StackPanel>
-                                            </StackPanel>
-                                        </StackPanel>
-                                    </StackPanel>
-
-                                    <StackPanel Orientation="Horizontal" Margin="0,10">
-                                        <StackPanel Orientation="Vertical" Margin="5,0">
-                                            <Button Content="连接Slave-Serial" 
-                            Name="btnConnectSerial" 
-                            Command="{Binding ConnectSerialCommand}" 
-                            IsEnabled="{Binding ConnectSerialBtnStatus}" 
-                            Style="{StaticResource CustomButtonStyle}" 
-                            Width="150" Margin="0,5"/>
-                                            <Button Content="断开Slave-Serial" 
-                            Name="btnDisconnectSerial" 
-                            Command="{Binding DisconnectSerialCommand}" 
-                            IsEnabled="{Binding DisconnectSerialBtnStatus}" 
-                            Style="{StaticResource CustomButtonStyle}" 
-                            Width="150" Margin="0,5"/>
-                                        </StackPanel>
-                                        <StackPanel Orientation="Horizontal" Margin="5,0">
-                                            <StackPanel Orientation="Vertical">
-                                                <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                                                    <TextBox Text="1" Width="20" Margin="5,0"/>
-                                                    <TextBox Text="COM4" Width="50" Margin="5,0"/>
-                                                    <ComboBox x:Name="CmbMasterServerSerial" Margin="5,0" SelectedIndex="0">
+                                                <StackPanel Orientation="Horizontal" Margin="0,5" Visibility="{Binding ConnectionSerialArgs}">
+                                                    <TextBox Width="50" Margin="5,0" ToolTip="Serial Name" Text="{Binding SerialName}"/>
+                                                    <ComboBox Margin="5,0" ToolTip="Serial Protocol" SelectedIndex="{Binding SerialProtocol,Mode=TwoWay}">
                                                         <ComboBoxItem Content="RTU" />
                                                         <ComboBoxItem Content="ASCII" />
                                                     </ComboBox>
                                                 </StackPanel>
-                                                <StackPanel Orientation="Horizontal" Margin="5,15,0,0">
-                                                    <TextBlock Text="{Binding StatusMasterSerial}" FontSize="12"/>
+                                                <StackPanel Orientation="Horizontal" Margin="5,5">
+                                                    <TextBlock Text="{Binding StatusMasterTcp}"/>
                                                 </StackPanel>
                                             </StackPanel>
                                         </StackPanel>

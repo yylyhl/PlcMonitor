@@ -3,17 +3,17 @@ using Microsoft.Extensions.Logging;
 using Serilog;
 using Serilog.Events;
 
-namespace PlcMonitor.WinForm
+namespace PlcMonitor.Wpf
 {
     public static class LoggingSerilogExtensions
     {
         /// <summary>
         /// 初始化Serilog全局实例，并注入到DI
         /// </summary>
-        public static ILoggingBuilder AddMonitorSerilog(this ILoggingBuilder builder, IConfiguration configuration)
+        public static ILoggingBuilder AddMonitorSerilog(this ILoggingBuilder builder, IConfiguration? configuration = null)
         {
             //Serilog.Debugging.SelfLog.Enable(msg => System.IO.File.AppendAllText("logs/serilog-selflog.txt", msg + Environment.NewLine));
-            if (configuration.GetSection("Serilog").Exists())
+            if (configuration != null && configuration.GetSection("Serilog").Exists())
             {
                 Log.Logger = new LoggerConfiguration()
                     .Enrich.FromLogContext()
