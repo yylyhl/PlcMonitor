@@ -28,9 +28,9 @@ namespace PlcMonitor.WinForm
             var services = new ServiceCollection();
             services.AddLogging(factory => factory.AddMonitorSerilog(configuration));
             services.AddLogging(factory => factory.AddMonitorNLog(configuration));
-            services.AddTransient<MainForm>();
+            services.AddTransient<RdpForm>();
             ServiceProvider = services.BuildServiceProvider();
-            Application.Run(ServiceProvider.GetRequiredService<MainForm>());
+            Application.Run(ServiceProvider.GetRequiredService<RdpForm>());
             LoggingSerilogExtensions.CloseSerilog();
             LoggingNLogExtensions.CloseNLog();
         }
